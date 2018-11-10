@@ -21,14 +21,15 @@ public class Reader implements Runnable {
 				if (input.available() > 0) {
 					message = read();
 					state.enqueueRead(message);
+					System.out.println("Reader Message: " + message);
 				}
 				Thread.sleep(1);
 			}
 			this.input.close();
 			System.out.println("Reader Terminated Gracefully!");
 		} catch (IOException | InterruptedException e) {
-			System.out.println("Reader Terminated Unexpectedly!");
-			e.printStackTrace();
+			System.err.println("Reader Terminated Error!");
+//			e.printStackTrace();
 			state.setKill(true);
 		}
 	}

@@ -57,7 +57,6 @@ public class ConnectionState {
 	public String dequeueRead() {
 		synchronized (readQueueLock) {
 			String mes = readQueue.poll();
-			System.out.println(mes);
 			return mes;
 		}
 	}

@@ -13,7 +13,8 @@ public class Constants {
 	/** Default value of interval in which client will contact tracker	 */
 	public static final int DEFAULT_INTERVAL = 1800;
 	/** Default bandwidth value => 256kB/2s (PIECE_SIZE/2000ms) or 2 Megabits/sec */
-	public static final int DEFAULT_BANDWIDTH = 2000;
+//	public static final int DEFAULT_BANDWIDTH = 2000;
+	public static final int DEFAULT_BANDWIDTH = 3000;
 	/** Maximum number of threads that will be submitted by server */
 	public static final int MAX_SERVER_THREADS = 100;
 	/** Maximum number of threads that will be submitted by client */

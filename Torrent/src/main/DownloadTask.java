@@ -39,25 +39,50 @@ public class DownloadTask implements Runnable {
 		writerThread.start();
 
 		while (state.isAlive()) {
-			processRead();
-			processWrite();
-//			try {
-//				Thread.sleep(job.getBandwidth());
-//			} catch (InterruptedException e) {
-//				state.setKill(true);
-//			}
+//			processRead();
+//			processWrite();
+			test();
+			try {
+				Thread.sleep(job.getBandwidth());
+			} catch (InterruptedException e) {
+				state.setKill(true);
+			}
 		}
 
 		try {
+			System.out.println("Threads joins");
 			readerThread.join();
 			writerThread.join();
 		} catch (InterruptedException e) {
 			System.out.println("Error, Thread joining interrupted!");
 		}
+		System.out.println("Download Task Process Terminated ...");
 		connectedPeers.remove(peer);
-		System.out.println("Process Terminated ...");
+		state.terminate();
 	}
 
+	boolean send = true;
+	public void test() {
+		if (send) {
+			state.enqueueWrite("PIECEEXISTS");
+			send = false;
+		}
+		
+		
+		if (state.hasRead()) {
+			String message = state.dequeueRead();
+			if (message.startsWith("HAVEPIECE")) {
+				state.enqueueWrite("DISCONNECT");
+				System.out.println("Client sends disconnects ...");
+//				state.setKill(true);
+			} if (message.startsWith("DISCONNECTED")) {
+				
+				System.out.println("Client disconnected ...");
+				state.setKill(true);
+			}
+		}
+	}
+	
 	/**
 	 * Process response from Peer.
 	 */
@@ -89,16 +114,12 @@ public class DownloadTask implements Runnable {
 			} else if (message.startsWith("NOPIECE")) {
 				// NOTIFY FILE MANAGER THAT PEER DOESN'T HAVE PIECE
 				String[] messageSplit = message.split(" ");
-				String infoHash = messageSplit[1].trim();
 				int index = Integer.parseInt(messageSplit[2].trim());
-				job.enquePiece(job.getPiece(index));
-				System.out.println(message);
-			} else if (message.startsWith("DISCONNECT")) {
-				System.out.println(message);
+				job.enquePiece(job.getPieceWithoutData(index));
+				System.out.println("NOPiece Error: " + message);
+			} else if (message.startsWith("DISCONNECTED")) {
+				System.out.println("Client disconnects ...");
 				state.setKill(true);
-			} else if (message.startsWith("DISCONNECT")) {
-				System.out.println("CLIENT RECEIVES DISCONNECT");
-//				state.setKill(true);
 			} else {
 				System.out.println("SYNTAX ERROR " + message);
 			}
@@ -113,24 +134,15 @@ public class DownloadTask implements Runnable {
 	public void processWrite() {
 		// ASK FILE MANAGER IF NEEDS PIECE
 		if (job.hasPiece()) {
-			state.enqueueWrite("PIECEEXISTS " + job.getTorrentInfoHash() + " " + job.dequePiece().getIndex());
-		} else if (run) {
-			System.out.println("CLIENT SENDS DISCONNECT");
+			Piece piece = job.dequePiece();
+			String infoHash = job.getTorrentInfoHash();
+			if (piece != null) {
+				state.enqueueWrite("PIECEEXISTS " + infoHash + " " + piece.getIndex());
+			}
+		} else if (job.isJobDone() && state.isAlive()) {
+			System.out.println("Client sends disconnect");
 			state.enqueueWrite("DISCONNECT");
-//			run = false;
 			state.setKill(true);
 		}
-//		if (!job.isDone()) {
-//			Piece piece = job.findLessSeenPiece();
-//			if (piece != null) {				
-//				state.enqueueWrite("PIECEEXISTS " + job.getTorrentInfoHash() + " " + piece.getIndex());
-//			}
-//		} else if(run) {
-//			System.out.println("CLIENT SENDS DISCONNECT");
-//			state.enqueueWrite("DISCONNECT");
-//			run = false;
-////			state.setKill(true);
-//		}		
-//		state.enqueueWrite("KEEPALIVE");
 	}
 }

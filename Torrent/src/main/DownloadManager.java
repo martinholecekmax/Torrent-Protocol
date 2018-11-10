@@ -24,6 +24,7 @@ public class DownloadManager implements Runnable{
 	private Peer client;
 	private FileManager fileManager;
 	private int interval;
+	@SuppressWarnings("unused")
 	private ExecutorService executorService;
 	
 	public DownloadManager(Job job, FileManager fileManager) {
@@ -37,7 +38,7 @@ public class DownloadManager implements Runnable{
 	
 	@Override
 	public void run() {
-		while(!job.isDone()) {
+		while(!job.isJobDone()) {
 			try {
 				TrackerResponse response = TrackerClient.getResponse(job.getTorrentMetadata(), client, job.getStatus());
 				peers = response.getPeers();

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import org.apache.commons.codec.binary.Base64;
 
-import file.CSVFileHandler;
 import file.FileManager;
 
 public class ServerHandler implements Runnable {
@@ -32,7 +31,14 @@ public class ServerHandler implements Runnable {
 		writerThread.start();
 
 		while (state.isAlive()) {
-			processCommands();
+//			processCommands();
+			try {
+				test();
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		try {
@@ -42,9 +48,25 @@ public class ServerHandler implements Runnable {
 			e.printStackTrace();
 		}
 
-		System.out.println("Process Terminated");
+		System.out.println("Server Process Terminated ...");
 		connections.remove(state.getSocket());
 		state.terminate();
+	}
+	
+	public void test() throws InterruptedException {
+		if (state.hasRead()) {
+			String message = state.dequeueRead();
+			if (message.startsWith("PIECEEXISTS")) {
+				state.enqueueWrite("HAVEPIECE");
+			} else if (message.startsWith("DISCONNECT")) {
+				System.out.println("Server Disconnects ...");
+				state.enqueueWrite("DISCONNECTED");
+				Thread.sleep(100);
+				state.setKill(true);
+			} else {
+				System.out.println("Syntax Error");
+			}
+		}
 	}
 
 	public void processCommands() {
@@ -72,8 +94,8 @@ public class ServerHandler implements Runnable {
 			} else if (message.startsWith("KEEPALIVE")) {
 				System.out.println("KEEPALIVE from client");
 			} else if (message.startsWith("DISCONNECT")) {
-				System.out.println("SERVER RECEIVED DISCONNECT");
-				state.enqueueWrite("DISCONNECT");
+				System.out.println("Server disconnects ...");
+//				state.enqueueWrite("DISCONNECTED");
 				state.setKill(true);
 			} else {
 				System.out.println("SYNTAX ERROR " + message);

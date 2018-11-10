@@ -18,8 +18,9 @@ public class Job implements Serializable {
 	private boolean done = false;
 	private TorrentStatus status;
 	private int bandwidth;
-	
+
 	private Object queueLock = new Object();
+	private Object pieceListLock = new Object();
 	private PiecesQueue piecesQueue;
 
 	public Job(ArrayList<Piece> pieces, ArrayList<File> files, TorrentMetadata torrentMetadata) {
@@ -34,16 +35,20 @@ public class Job implements Serializable {
 	}
 
 	public void enquePiece(Piece piece) {
-		piecesQueue.enqueuePiece(piece);
+		synchronized (queueLock) {
+			piecesQueue.enqueuePiece(piece);
+		}
 	}
 
 	public Piece dequePiece() {
-		return piecesQueue.dequeuePiece();
+		synchronized (queueLock) {
+			return piecesQueue.dequeuePiece();
+		}
 	}
 
 	public boolean hasPiece() {
 		synchronized (queueLock) {
-			if (piecesQueue.hasPiece()) {				
+			if (piecesQueue.hasPiece()) {
 				return true;
 			}
 			return false;
@@ -92,14 +97,16 @@ public class Job implements Serializable {
 	 * @return True if file has all pieces, otherwise false.
 	 */
 	public boolean isJobDone() {
-		for (Piece piece : pieces) {
-			if (piece.isStored() == false) {
-				return false;
+		synchronized (pieceListLock) {
+			for (Piece piece : pieces) {
+				if (piece.isStored() == false) {
+					return false;
+				}
 			}
+			this.done = true;
+			this.status.setEvent(Event.COMPLETED);
+			return true;
 		}
-		this.done = true;
-		this.status.setEvent(Event.COMPLETED);
-		return true;
 	}
 
 	/**
@@ -136,23 +143,25 @@ public class Job implements Serializable {
 	 * @return True if piece has been stored successfully, otherwise, return false
 	 */
 	public boolean storePiece(Piece piece) {
-		for (Piece currentPiece : pieces) {
-			if (piece.getIndex() == currentPiece.getIndex()) {
-				if (currentPiece.isStored()) {
-					return true;
-				}
-				if (currentPiece.validate(piece)) {
-					if (storeValidPiece(piece)) {
-						currentPiece.setStored(true);
-						status.addDownloaded(PIECE_SIZE);
-						status.decreaseLeft(PIECE_SIZE);
+		synchronized (pieceListLock) {
+			for (Piece currentPiece : pieces) {
+				if (piece.getIndex() == currentPiece.getIndex()) {
+					if (currentPiece.isStored()) {
 						return true;
 					}
+					if (currentPiece.validate(piece)) {
+						if (storeValidPiece(piece)) {
+							currentPiece.setStored(true);
+							status.addDownloaded(PIECE_SIZE);
+							status.decreaseLeft(PIECE_SIZE);
+							return true;
+						}
+					}
+					break;
 				}
-				break;
 			}
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -168,6 +177,15 @@ public class Job implements Serializable {
 		} catch (IOException e) {
 			return false;
 		}
+	}
+
+	public Piece getPieceWithoutData(int index) {
+		for (Piece piece : pieces) {
+			if (piece.getIndex() == index) {
+				return piece;
+			}
+		}
+		return null;
 	}
 
 	/**

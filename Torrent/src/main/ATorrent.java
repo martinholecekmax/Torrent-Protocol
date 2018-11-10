@@ -11,8 +11,9 @@ public class ATorrent {
 
 	public static void main(String[] args) {
 		ATorrent aTorrent = new ATorrent();
-//		aTorrent.start(true);			
-		aTorrent.start(false);			
+		boolean create = true;
+		create = false;
+		aTorrent.start(create);			
 	}
 
 	public void start(boolean start) {

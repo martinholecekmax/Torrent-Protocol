@@ -3,13 +3,11 @@ package main;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import file.CSVFileHandler;
-
 public class Writer implements Runnable {
 
 	private ConnectionState state;
 	private DataOutputStream output = null;
-
+	private String mesg = "";
 	public Writer(ConnectionState state) {
 		this.state = state;
 	}
@@ -22,9 +20,11 @@ public class Writer implements Runnable {
 			while (state.isAlive() || state.hasWrite()) {
 				while (state.hasWrite()) {
 					String message = state.dequeueWrite();
+					mesg = message;
 					// if queue is empty then don't send message
 					if (message != null && message.length() > 0) {
 						writeOut(message);
+						System.out.println("Writer message: " + message);
 					}
 				}
 				Thread.sleep(1);
@@ -32,26 +32,17 @@ public class Writer implements Runnable {
 			this.output.close();
 			System.out.println("Writer Terminated Gracefully!");
 		} catch (IOException | InterruptedException e) {
-			System.out.println("Writer Terminated Unexpectedly!");
+			System.err.println("Writer Terminated Error Unexpectedly! " + mesg);
 			e.printStackTrace();
-			state.setKill(true);
+//			state.setKill(true);
 		}
 	}
 
 	public synchronized void writeOut(String msg) throws IOException {
-		byte[] message = getAsciiBytes(msg);
+		byte[] message = msg.getBytes();
 		output.writeInt(message.length);
 		output.flush();
 		output.write(message);
 		output.flush();
-	}
-
-	public static byte[] getAsciiBytes(String input) {
-		char[] character = input.toCharArray();
-		byte[] ascii = new byte[character.length];
-		for (int asciiValue = 0; asciiValue < character.length; asciiValue++) {
-			ascii[asciiValue] = (byte) (character[asciiValue] & 0x007F);
-		}
-		return ascii;
 	}
 }
