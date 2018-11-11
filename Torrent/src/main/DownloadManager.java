@@ -10,14 +10,15 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.json.JSONException;
+import org.apache.log4j.Logger;
 
 import file.FileManager;
 import tracker.TrackerClient;
 import tracker.TrackerResponse;
 
 public class DownloadManager implements Runnable{
-	
+
+	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 	private ArrayList<Peer> peers;
 	private ArrayList<Peer> connectedPeers;
 	private Job job;
@@ -41,15 +42,18 @@ public class DownloadManager implements Runnable{
 		while(!job.isJobDone()) {
 			try {
 				TrackerResponse response = TrackerClient.getResponse(job.getTorrentMetadata(), client, job.getStatus());
-				peers = response.getPeers();
-				interval = response.getInterval();
+				if (response != null) {
+					peers = response.getPeers();
+					interval = response.getInterval();					
+				}
 				createDownloadTasks(peers);
 				Thread.sleep(interval);
-			} catch (InterruptedException | IOException | JSONException e) {
-				e.printStackTrace();
+			} catch (InterruptedException e) {
+				LOGGER.warn("Thread sleep has been interrupted.", e);
 			}
 		}
-		System.out.println("Job Finished "+ job.getTorrentMetadata().getInfo().getName());
+		fileManager.contactTracker();
+		LOGGER.info("Job Finished "+ job.getTorrentMetadata().getInfo().getName());
 	}	
 	
 	/**
@@ -86,10 +90,12 @@ public class DownloadManager implements Runnable{
 				Thread thread = new Thread(task, "Download task thread");
 				thread.start();
 				
-				System.out.println("Peer " + "Connected: " + peer.getPeerID() + peer.getIpAddress() + ":" + peer.getPort());
+				LOGGER.info("Peer Connected: " + peer.getPeerID() + peer.getIpAddress() + ":" + peer.getPort());
 			} catch (UnknownHostException e) {
+				LOGGER.debug("Couldn't connect to a peer.", e);
 				continue;
 			} catch (IOException e) {
+				LOGGER.debug("Couldn't create client socket.", e);
 				continue;
 			}
 		}

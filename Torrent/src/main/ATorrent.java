@@ -5,15 +5,21 @@ import static utils.Constants.TORRENT_ROOT_LOCATION;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
 import file.FileManager;
 
 public class ATorrent {
+	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 
 	public static void main(String[] args) {
+		PropertyConfigurator.configure("properties/log4j.properties");
+		LOGGER.info("Program Started ...");
 		ATorrent aTorrent = new ATorrent();
 		boolean create = true;
 		create = false;
-		aTorrent.start(create);			
+		aTorrent.start(create);
 	}
 
 	public void start(boolean start) {
@@ -23,19 +29,19 @@ public class ATorrent {
 			String location = TORRENT_ROOT_LOCATION;
 			String torrentFileName = TORRENT_ROOT_LOCATION + "test.temp";
 //			String torrentFileName = TORRENT_ROOT_LOCATION + "Alpha.temp";
-			String storeLocation = TORRENT_ROOT_LOCATION + "test3\\";
+			String storeLocation = TORRENT_ROOT_LOCATION + "test\\";
 
 			// Load previous jobs from dat file
 //			fileManager.loadJobs();
 
 			// Start Server
 			ServerSocket serverSocket = new ServerSocket(0);
-			
+
 			Peer peer = new Peer(serverSocket.getInetAddress().toString(), serverSocket.getLocalPort());
-			
+
 			// Initialize FileManager
 			FileManager fileManager = new FileManager(peer);
-			
+
 			Server listener = new Server(serverSocket, fileManager);
 			Thread thread = new Thread(listener, "Listener thread.");
 			thread.start();
@@ -45,43 +51,54 @@ public class ATorrent {
 			} else {
 				loadTorrent(fileManager, torrentFileName, storeLocation);
 			}
-			
-		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
+
+		} catch (IOException e) {
+			LOGGER.fatal("Failed to create server socket", e);
 		}
 	}
-	
+
 	/**
-	 *  Create Metadata file.
-	 *  
+	 * Create Metadata file.
+	 * 
 	 * @param fileManager
 	 * @param filename
 	 * @param location
 	 * @throws IOException
 	 */
-	private void createTorrent(FileManager fileManager, String filename, String location) throws IOException {
-		TorrentProcessor processor = new TorrentProcessor();
-		processor.createMetadataFile(fileManager, filename, location, "Martin");
-		System.out.println("CREATE TORRENT METADATA");
+	private void createTorrent(FileManager fileManager, String filename, String location) {
+		try {
+			TorrentProcessor processor = new TorrentProcessor();
+			Job job = processor.createMetadataFile(fileManager, filename, location, "Martin");
+			fileManager.contactTracker();
+			LOGGER.info("CREATE TORRENT METADATA " + job.getTorrentInfoHash());
+		} catch (IOException e) {
+			LOGGER.fatal("Creating torrent failed.", e);
+		}
 	}
 
 	/**
-	 *  Create DownloadManager - Load torrent Metadata.
-	 *  
+	 * Create DownloadManager - Load torrent Metadata.
+	 * 
 	 * @param fileManager
 	 * @param torrentFileName
 	 * @param storeLocation
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	private void loadTorrent(FileManager fileManager, String torrentFileName, String storeLocation)
-			throws IOException, ClassNotFoundException {
-		TorrentProcessor processor = new TorrentProcessor();
-		TorrentMetadata torrentMetadata = processor.loadMetadataFile(torrentFileName);
-		Job job = fileManager.createJob(torrentMetadata, storeLocation);
-		DownloadManager downloadManager = new DownloadManager(job, fileManager);
-		Thread downloadManagerThread = new Thread(downloadManager, "Download Manager Thread");
-		downloadManagerThread.start();
-		System.out.println("LOAD TORRENT METADATA");
+	private void loadTorrent(FileManager fileManager, String torrentFileName, String storeLocation) {
+		try {
+			TorrentProcessor processor = new TorrentProcessor();
+			TorrentMetadata torrentMetadata;
+			torrentMetadata = processor.loadMetadataFile(torrentFileName);
+			Job job = fileManager.createJob(torrentMetadata, storeLocation);
+			DownloadManager downloadManager = new DownloadManager(job, fileManager);
+			Thread downloadManagerThread = new Thread(downloadManager, "Download Manager Thread");
+			downloadManagerThread.start();
+			LOGGER.info("LOAD TORRENT METADATA " + torrentMetadata.getInfoHash());
+		} catch (ClassNotFoundException e) {
+			LOGGER.fatal("Data from loaded file are not a TorrentMetadata class type.", e);
+		} catch (IOException e) {
+			LOGGER.fatal("Loading torrent failed.", e);
+		}
 	}
 }

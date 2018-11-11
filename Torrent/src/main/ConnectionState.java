@@ -71,12 +71,8 @@ public class ConnectionState {
 		return !kill;
 	}
 
-	public void terminate() {
-		try {
-			socket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void terminate() throws IOException {
+		socket.close();
 	}
 
 	public Socket getSocket() {

@@ -8,7 +8,20 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.apache.log4j.Logger;
+
+import main.ATorrent;
+
 public class Utility {
+	
+	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
+	
+	/**
+	 * Generate SHA256 hash from input bytes.
+	 *
+	 * @param input - byte array
+	 * @return - String representation of message digest of the input.
+	 */
 	public static String getHahSHA256(byte[] input) {
 		String output = null;
 		try {
@@ -17,12 +30,18 @@ public class Utility {
 			byte[] hash = sha.digest();
 			output = String.format("%032X", new BigInteger(1, hash));
 		} catch (NoSuchAlgorithmException e) {
-			System.out.println("This Algorithm is not available.");
+			LOGGER.fatal("The Algorithm is not available.", e);
 			return null;
 		}
 		return output;
 	}
 	
+	/**
+	 * Generate SHA1 hash from input bytes.
+	 *
+	 * @param input - byte array
+	 * @return - String representation of message digest of the input.
+	 */
 	public static String getHahSHA1(byte[] input) {
 		String output = null;
 		try {
@@ -31,7 +50,7 @@ public class Utility {
 			byte[] hash = sha.digest();
 			output = String.format("%032X", new BigInteger(1, hash));
 		} catch (NoSuchAlgorithmException e) {
-			System.out.println("This Algorithm is not available.");
+			LOGGER.fatal("The Algorithm is not available.", e);
 			return null;
 		}
 		return output;
@@ -54,14 +73,14 @@ public class Utility {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			thedigest = md.digest(byteArrayOutputStream.toByteArray());
 		} catch (Exception e) {
-			System.out.println("Error in Object Output Stream.");
+			LOGGER.fatal("Error in generating check sum.", e);
 			return null;
 		} finally {
 			if (objectOutputStream != null) {
 				try {
 					objectOutputStream.close();
 				} catch (IOException e) {
-					System.out.println("Error in closing the Object Output Stream.");
+					LOGGER.fatal("Error in closing the Object Output Stream.", e);
 					return null;
 				}				
 			}

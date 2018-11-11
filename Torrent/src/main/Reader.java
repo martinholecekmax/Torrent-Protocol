@@ -3,8 +3,11 @@ package main;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+
 public class Reader implements Runnable {
 
+	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 	private ConnectionState state;
 	private DataInputStream input = null;
 
@@ -17,19 +20,21 @@ public class Reader implements Runnable {
 		try {
 			this.input = new DataInputStream(state.getSocket().getInputStream());
 			String message = "";
-			while (state.isAlive() || state.hasRead()) {
+			while (state.isAlive()) {
 				if (input.available() > 0) {
 					message = read();
 					state.enqueueRead(message);
-					System.out.println("Reader Message: " + message);
 				}
-				Thread.sleep(1);
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+					LOGGER.error("Thread sleep has been interrupted.", e);
+				}
 			}
 			this.input.close();
-			System.out.println("Reader Terminated Gracefully!");
-		} catch (IOException | InterruptedException e) {
-			System.err.println("Reader Terminated Error!");
-//			e.printStackTrace();
+			LOGGER.info("Reader Terminated Gracefully!");
+		} catch (IOException e) {
+			LOGGER.error("Reader Thread failed to read from input stream.", e);
 			state.setKill(true);
 		}
 	}

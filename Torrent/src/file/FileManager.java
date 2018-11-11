@@ -9,8 +9,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-import org.json.JSONException;
+import org.apache.log4j.Logger;
 
+import main.ATorrent;
 import main.Job;
 import main.Peer;
 import main.Piece;
@@ -27,6 +28,8 @@ import tracker.TrackerClient;
  */
 public class FileManager {
 
+	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
+
 	private ArrayList<Job> jobs = new ArrayList<Job>();
 
 	private FileHandler fileHandler = new FileHandler();
@@ -38,11 +41,11 @@ public class FileManager {
 	public FileManager(Peer peer) {
 		this.peer = peer;
 	}
-	
+
 	public Peer getPeer() {
 		return peer;
 	}
-	
+
 	public ArrayList<Job> getJobs() {
 		return jobs;
 	}
@@ -187,8 +190,11 @@ public class FileManager {
 				fileOutputStream.close();
 				return true;
 			} catch (FileNotFoundException e) {
+				LOGGER.error("Error, resume.dat file not found.", e);
 				return false;
 			} catch (IOException e) {
+				LOGGER.error("Error, saving jobs into resume.dat file.", e);
+				e.printStackTrace();
 				return false;
 			}
 		}
@@ -227,10 +233,13 @@ public class FileManager {
 				fileInputStream.close();
 				return true;
 			} catch (FileNotFoundException e) {
+				LOGGER.error("Error, resume.dat file not found.", e);
 				return false;
 			} catch (ClassNotFoundException e) {
+				LOGGER.error("Error, the object from resume.dat file is not type of Job class.", e);
 				return false;
 			} catch (IOException e) {
+				LOGGER.error("Error, loading jobs from resume.dat file.", e);
 				return false;
 			}
 		}
@@ -241,14 +250,8 @@ public class FileManager {
 	 */
 	public void contactTracker() {
 		for (Job job : jobs) {
-			try {
-				if (job.isDone()) {
-					TrackerClient.getResponse(job.getTorrentMetadata(), peer, job.getStatus());
-				}
-			} catch (IOException e) {
-				continue;
-			} catch (JSONException e) {
-				continue;
+			if (job.isDone()) {
+				TrackerClient.getResponse(job.getTorrentMetadata(), peer, job.getStatus());
 			}
 		}
 	}

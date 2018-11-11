@@ -1,13 +1,16 @@
 package main;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class PiecesQueue {
+public class PiecesQueue implements Serializable{
+	private static final long serialVersionUID = 6206081680138041080L;
+
 	private Queue<Piece> pieceQueue;
 
-	private Object writeQueueLock = new Object();
+	transient private Object writeQueueLock = new Object();
 
 	public PiecesQueue() {
 		pieceQueue = new LinkedList<>();

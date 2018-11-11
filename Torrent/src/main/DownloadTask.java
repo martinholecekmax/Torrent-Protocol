@@ -2,15 +2,19 @@ package main;
 
 import static utils.Constants.PIECE_SIZE;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 
 import file.FileManager;
 import utils.Utility;
 
 public class DownloadTask implements Runnable {
+
+	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 	private FileManager fileManager;
 	private ArrayList<Peer> connectedPeers;
 	private Peer peer;
@@ -39,50 +43,30 @@ public class DownloadTask implements Runnable {
 		writerThread.start();
 
 		while (state.isAlive()) {
-//			processRead();
-//			processWrite();
-			test();
+			processRead();
+			processWrite();
 			try {
 				Thread.sleep(job.getBandwidth());
 			} catch (InterruptedException e) {
+				LOGGER.error("Thread sleep has been interrupted.", e);
 				state.setKill(true);
 			}
 		}
 
 		try {
-			System.out.println("Threads joins");
+			LOGGER.info("Client, Reader and Writer Threads are finishing before closing.");
 			readerThread.join();
 			writerThread.join();
+			state.terminate();
 		} catch (InterruptedException e) {
-			System.out.println("Error, Thread joining interrupted!");
+			LOGGER.error("Closing threads has been interrupted.", e);
+		} catch (IOException e) {
+			LOGGER.error("Closing socket failed.", e);
 		}
-		System.out.println("Download Task Process Terminated ...");
+		LOGGER.info("Download Task Process Terminated ...");
 		connectedPeers.remove(peer);
-		state.terminate();
 	}
 
-	boolean send = true;
-	public void test() {
-		if (send) {
-			state.enqueueWrite("PIECEEXISTS");
-			send = false;
-		}
-		
-		
-		if (state.hasRead()) {
-			String message = state.dequeueRead();
-			if (message.startsWith("HAVEPIECE")) {
-				state.enqueueWrite("DISCONNECT");
-				System.out.println("Client sends disconnects ...");
-//				state.setKill(true);
-			} if (message.startsWith("DISCONNECTED")) {
-				
-				System.out.println("Client disconnected ...");
-				state.setKill(true);
-			}
-		}
-	}
-	
 	/**
 	 * Process response from Peer.
 	 */
@@ -104,24 +88,24 @@ public class DownloadTask implements Runnable {
 
 				boolean stored = fileManager.storePiece(infoHash, piece);
 				if (stored) {
-					System.out.println("Piece stored successfully");
+					LOGGER.info("Piece: " + piece.getIndex() + " stored successfully!");
 				} else {
-					job.enquePiece(piece);
-					System.out.println("Piece not stored");
+//					job.enquePiece(piece);
+					LOGGER.info("Piece: " + index + " hasn't been stored!");
 				}
 
 //				CSVFileHandler.writeTime("Reieved", index);
 			} else if (message.startsWith("NOPIECE")) {
 				// NOTIFY FILE MANAGER THAT PEER DOESN'T HAVE PIECE
-				String[] messageSplit = message.split(" ");
-				int index = Integer.parseInt(messageSplit[2].trim());
-				job.enquePiece(job.getPieceWithoutData(index));
-				System.out.println("NOPiece Error: " + message);
+//				String[] messageSplit = message.split(" ");
+//				int index = Integer.parseInt(messageSplit[2].trim());
+//				job.enquePiece(job.getPieceWithoutData(index));
+				LOGGER.info("This peer doesn't have a piece: " + message);
 			} else if (message.startsWith("DISCONNECTED")) {
-				System.out.println("Client disconnects ...");
+				LOGGER.info("Client disconnects ...");
 				state.setKill(true);
 			} else {
-				System.out.println("SYNTAX ERROR " + message);
+				LOGGER.warn("SYNTAX ERROR " + message);
 			}
 		}
 	}
@@ -129,20 +113,28 @@ public class DownloadTask implements Runnable {
 	/**
 	 * Ask Peer for Piece.
 	 */
-	boolean run = true;
-
 	public void processWrite() {
 		// ASK FILE MANAGER IF NEEDS PIECE
-		if (job.hasPiece()) {
-			Piece piece = job.dequePiece();
-			String infoHash = job.getTorrentInfoHash();
+//		if (job.hasPiece()) {
+//			Piece piece = job.dequePiece();
+//			String infoHash = job.getTorrentInfoHash();
+//			if (piece != null) {
+//				state.enqueueWrite("PIECEEXISTS " + infoHash + " " + piece.getIndex());
+//			}
+//		} else if (job.isJobDone() && state.isAlive()) {
+//			LOGGER.info("Client sends disconnect");
+//			state.enqueueWrite("DISCONNECT");
+//		} 
+		
+		if (job.isJobDone() && state.isAlive()) {
+			LOGGER.info("Client sends disconnect");
+			state.enqueueWrite("DISCONNECT");
+		} else {
+			Piece piece = job.findLessSeenPiece();
 			if (piece != null) {
+				String infoHash = job.getTorrentInfoHash();
 				state.enqueueWrite("PIECEEXISTS " + infoHash + " " + piece.getIndex());
 			}
-		} else if (job.isJobDone() && state.isAlive()) {
-			System.out.println("Client sends disconnect");
-			state.enqueueWrite("DISCONNECT");
-			state.setKill(true);
 		}
 	}
 }

@@ -56,7 +56,7 @@ public class TorrentProcessor {
 	 * @return
 	 * @throws IOException
 	 */
-	public boolean createMetadataFile(FileManager fileManager, String filename, String location, String createdBy)
+	public Job createMetadataFile(FileManager fileManager, String filename, String location, String createdBy)
 			throws IOException {
 		FileHandler fileHandler = new FileHandler();
 		ArrayList<File> files = fileHandler.getFiles(filename);
@@ -78,7 +78,7 @@ public class TorrentProcessor {
 			piece.setStored(true);
 		}
 		fileManager.add(job);
-		return true;
+		return job;
 	}
 
 	/**

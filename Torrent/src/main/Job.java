@@ -1,6 +1,7 @@
 package main;
 
-import static utils.Constants.*;
+import static utils.Constants.DEFAULT_BANDWIDTH;
+import static utils.Constants.PIECE_SIZE;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,13 +20,15 @@ public class Job implements Serializable {
 	private TorrentStatus status;
 	private int bandwidth;
 
-	private Object queueLock = new Object();
-	private Object pieceListLock = new Object();
+	transient private Object queueLock;
+	transient private Object pieceListLock;
 	private PiecesQueue piecesQueue;
 
 	public Job(ArrayList<Piece> pieces, ArrayList<File> files, TorrentMetadata torrentMetadata) {
 		this.pieces = pieces;
 		this.files = files;
+		this.queueLock = new Object();
+		this.pieceListLock = new Object();
 		this.torrentMetadata = torrentMetadata;
 		this.status = new TorrentStatus();
 		this.status.setLeft(torrentMetadata.getInfo().getLength());
@@ -185,6 +188,7 @@ public class Job implements Serializable {
 				return piece;
 			}
 		}
+		System.err.println("Error get piece " + index);
 		return null;
 	}
 

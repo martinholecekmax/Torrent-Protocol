@@ -1,6 +1,7 @@
 package file;
 
-import static utils.Constants.*;
+import static utils.Constants.PIECE_SIZE;
+import static utils.Constants.TORRENT_ROOT_LOCATION;
 
 import java.io.File;
 import java.io.FileInputStream;

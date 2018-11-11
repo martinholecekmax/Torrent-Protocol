@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import utils.Utility;
 
-public class Piece implements Comparable<Piece>, Serializable {
+public class Piece implements Comparable<Piece>, Serializable {	
 	private static final long serialVersionUID = 6510434884363403458L;
 	private int index;
 	private String hash;

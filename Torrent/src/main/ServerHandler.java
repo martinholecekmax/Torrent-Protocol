@@ -1,15 +1,21 @@
 package main;
 
+import static utils.Constants.*;
+
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 
 import file.FileManager;
 
 public class ServerHandler implements Runnable {
+
+	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 	private Reader reader;
-	private Writer writer;	
+	private Writer writer;
 	private ConnectionState state;
 	private ArrayList<Socket> connections;
 	private FileManager fileManager;
@@ -26,50 +32,34 @@ public class ServerHandler implements Runnable {
 	public void run() {
 		Thread readerThread = new Thread(reader, "Server Reader Thread");
 		Thread writerThread = new Thread(writer, "Server Writer Thread");
-		
+
 		readerThread.start();
 		writerThread.start();
 
 		while (state.isAlive()) {
-//			processCommands();
 			try {
-				test();
-				Thread.sleep(2000);
+				processCommands();
+				Thread.sleep(DEFAULT_BANDWIDTH);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOGGER.error("Thread sleep has been interrupted.", e);
 			}
 		}
 
 		try {
+			LOGGER.info("Server, Reader and Writer Threads are finishing before closing.");
 			readerThread.join();
 			writerThread.join();
+			state.terminate();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			LOGGER.error("Closing threads has been interrupted.", e);
+		} catch (IOException e) {
+			LOGGER.error("Closing socket failed.", e);
 		}
-
-		System.out.println("Server Process Terminated ...");
+		LOGGER.info("Server Process Terminated ...");
 		connections.remove(state.getSocket());
-		state.terminate();
-	}
-	
-	public void test() throws InterruptedException {
-		if (state.hasRead()) {
-			String message = state.dequeueRead();
-			if (message.startsWith("PIECEEXISTS")) {
-				state.enqueueWrite("HAVEPIECE");
-			} else if (message.startsWith("DISCONNECT")) {
-				System.out.println("Server Disconnects ...");
-				state.enqueueWrite("DISCONNECTED");
-				Thread.sleep(100);
-				state.setKill(true);
-			} else {
-				System.out.println("Syntax Error");
-			}
-		}
 	}
 
-	public void processCommands() {
+	public void processCommands() throws InterruptedException {
 		if (state.hasRead()) {
 			String message = state.dequeueRead();
 
@@ -82,9 +72,9 @@ public class ServerHandler implements Runnable {
 				byte[] data = piece.getData();
 				if (data != null) {
 					String dataEncoded = new String(Base64.encodeBase64(data));
-					
+
 //					CSVFileHandler.writeTime("Send", index);
-					
+
 					state.enqueueWrite("HAVEPIECE " + infoHash + " " + index + " " + dataEncoded);
 				} else {
 					// FILE MANAGER DOESN'T HAVE FILE
@@ -92,13 +82,14 @@ public class ServerHandler implements Runnable {
 				}
 
 			} else if (message.startsWith("KEEPALIVE")) {
-				System.out.println("KEEPALIVE from client");
+				LOGGER.info("KEEPALIVE from client");
 			} else if (message.startsWith("DISCONNECT")) {
-				System.out.println("Server disconnects ...");
-//				state.enqueueWrite("DISCONNECTED");
+				LOGGER.info("Server disconnects ...");
+				state.enqueueWrite("DISCONNECTED");
+				Thread.sleep(100);
 				state.setKill(true);
 			} else {
-				System.out.println("SYNTAX ERROR " + message);
+				LOGGER.warn("SYNTAX ERROR " + message);
 			}
 		}
 	}

@@ -1,10 +1,13 @@
 package main;
 
+import java.io.Serializable;
+
 enum Event {
 	STARTED, COMPLETED, STOPPED
 }
 
-public class TorrentStatus {
+public class TorrentStatus implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private Event event;
 	private int downloaded;
 	private int uploaded;

@@ -1,11 +1,14 @@
 package main;
 
-import static utils.Constants.DEFAULT_INTERVAL;
+import static utils.Constants.CONTACT_TRACKER_TIMER;
+
+import org.apache.log4j.Logger;
 
 import file.FileManager;
 
 public class JobUpdater implements Runnable {
 
+	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 	private FileManager fileManager;
 	private boolean running;
 
@@ -19,9 +22,9 @@ public class JobUpdater implements Runnable {
 		while (running) {
 			updateJobs();
 			try {
-				Thread.sleep(DEFAULT_INTERVAL);
+				Thread.sleep(CONTACT_TRACKER_TIMER);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				LOGGER.error("Thread sleep has been interrupted.", e);
 			}
 		}
 	}
