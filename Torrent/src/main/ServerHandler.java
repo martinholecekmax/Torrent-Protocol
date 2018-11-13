@@ -22,6 +22,7 @@ public class ServerHandler implements Runnable {
 	private FileManager fileManager;
 
 	public ServerHandler(Socket socket, ArrayList<Socket> connections, FileManager fileManager) {
+		LOGGER.info("Peer Connected: " + socket.getLocalSocketAddress() + ":" + socket.getLocalPort());		
 		state = new ConnectionState(socket);
 		reader = new Reader(state);
 		writer = new Writer(state);

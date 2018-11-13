@@ -3,8 +3,10 @@ package main;
 import static utils.Constants.TORRENT_ROOT_LOCATION;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
@@ -20,7 +22,7 @@ public class ATorrent {
 		LOGGER.info("Program Started ...");
 		ATorrent aTorrent = new ATorrent();
 		boolean create = true;
-		create = false;
+//		create = false;
 		aTorrent.start(create);
 	}
 
@@ -44,8 +46,16 @@ public class ATorrent {
 
 			// Start Server
 			ServerSocket serverSocket = new ServerSocket(0);
-			InetAddress localIP = InetAddress.getLocalHost();		
-			Peer peer = new Peer(Optional.empty() ,serverSocket.getInetAddress().toString(),localIP.getHostAddress(), serverSocket.getLocalPort());
+			
+			String localIP = "";
+			try (final DatagramSocket socket = new DatagramSocket()) {
+				socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+				localIP = socket.getLocalAddress().getHostAddress();
+			} catch (UnknownHostException e) {
+				localIP = InetAddress.getLocalHost().getHostAddress();				
+			}
+			
+			Peer peer = new Peer(Optional.empty() ,serverSocket.getInetAddress().toString(),localIP, serverSocket.getLocalPort());
 
 			// Initialize FileManager
 			FileManager fileManager = new FileManager(peer);

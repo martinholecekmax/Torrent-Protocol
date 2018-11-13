@@ -214,3 +214,162 @@
 2018-11-13 10:44:42 INFO  ATorrent:67 - Download Task Process Terminated ...
 2018-11-13 10:44:42 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
 2018-11-13 10:44:42 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:56:37 INFO  ATorrent:20 - Program Started ...
+2018-11-13 10:56:37 INFO  ATorrent:35 - Server Created ...
+2018-11-13 10:56:37 INFO  ATorrent:36 - IP: 0.0.0.0/0.0.0.0
+2018-11-13 10:56:37 INFO  ATorrent:37 - Port: 57391
+2018-11-13 10:56:38 INFO  ATorrent:81 - CREATE TORRENT METADATA Pieces: 81 020BA879FA921ECCFEFF0C7CC7986ECD
+2018-11-13 11:11:09 INFO  ATorrent:22 - Program Started ...
+2018-11-13 11:11:09 INFO  ATorrent:35 - Server Created ...
+2018-11-13 11:11:09 INFO  ATorrent:36 - IP: 0.0.0.0/0.0.0.0
+2018-11-13 11:11:09 INFO  ATorrent:37 - Port: 57488
+2018-11-13 11:11:10 INFO  ATorrent:91 - CREATE TORRENT METADATA Pieces: 81 020BA879FA921ECCFEFF0C7CC7986ECD
+2018-11-13 11:12:35 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Connection reset by peer: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.write(Unknown Source)
+	at java.io.FilterOutputStream.write(Unknown Source)
+	at main.Writer.writeOut(Writer.java:49)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-13 11:12:35 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 11:12:35 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Connection reset by peer: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.write(Unknown Source)
+	at java.io.FilterOutputStream.write(Unknown Source)
+	at main.Writer.writeOut(Writer.java:49)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-13 11:12:35 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Connection reset by peer: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.write(Unknown Source)
+	at java.io.FilterOutputStream.write(Unknown Source)
+	at main.Writer.writeOut(Writer.java:49)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-13 11:12:35 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 11:12:35 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 11:12:36 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Connection reset by peer: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.write(Unknown Source)
+	at java.io.FilterOutputStream.write(Unknown Source)
+	at main.Writer.writeOut(Writer.java:49)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-13 11:12:36 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 11:12:36 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Connection reset by peer: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.write(Unknown Source)
+	at java.io.FilterOutputStream.write(Unknown Source)
+	at main.Writer.writeOut(Writer.java:49)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-13 11:12:36 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 11:12:36 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Connection reset by peer: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.write(Unknown Source)
+	at java.io.FilterOutputStream.write(Unknown Source)
+	at main.Writer.writeOut(Writer.java:49)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-13 11:12:36 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 11:12:36 INFO  ATorrent:50 - Server, Reader and Writer Threads are finishing before closing.
+2018-11-13 11:12:36 INFO  ATorrent:59 - Server Process Terminated ...
+2018-11-13 11:12:36 INFO  ATorrent:50 - Server, Reader and Writer Threads are finishing before closing.
+2018-11-13 11:12:36 INFO  ATorrent:59 - Server Process Terminated ...
+2018-11-13 11:12:36 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Connection reset by peer: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.write(Unknown Source)
+	at java.io.FilterOutputStream.write(Unknown Source)
+	at main.Writer.writeOut(Writer.java:49)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-13 11:12:36 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 11:12:36 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Connection reset by peer: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.write(Unknown Source)
+	at java.io.FilterOutputStream.write(Unknown Source)
+	at main.Writer.writeOut(Writer.java:49)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-13 11:12:36 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 11:12:36 INFO  ATorrent:50 - Server, Reader and Writer Threads are finishing before closing.
+2018-11-13 11:12:36 INFO  ATorrent:59 - Server Process Terminated ...
+2018-11-13 11:12:36 INFO  ATorrent:50 - Server, Reader and Writer Threads are finishing before closing.
+2018-11-13 11:12:36 INFO  ATorrent:59 - Server Process Terminated ...
+2018-11-13 11:12:36 INFO  ATorrent:50 - Server, Reader and Writer Threads are finishing before closing.
+2018-11-13 11:12:36 INFO  ATorrent:59 - Server Process Terminated ...
+2018-11-13 11:12:37 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Connection reset by peer: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.write(Unknown Source)
+	at java.io.FilterOutputStream.write(Unknown Source)
+	at main.Writer.writeOut(Writer.java:49)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-13 11:12:37 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 11:12:37 INFO  ATorrent:50 - Server, Reader and Writer Threads are finishing before closing.
+2018-11-13 11:12:37 INFO  ATorrent:59 - Server Process Terminated ...
+2018-11-13 11:12:38 INFO  ATorrent:50 - Server, Reader and Writer Threads are finishing before closing.
+2018-11-13 11:12:38 INFO  ATorrent:59 - Server Process Terminated ...
+2018-11-13 11:12:38 INFO  ATorrent:50 - Server, Reader and Writer Threads are finishing before closing.
+2018-11-13 11:12:38 INFO  ATorrent:59 - Server Process Terminated ...
+2018-11-13 11:12:39 INFO  ATorrent:50 - Server, Reader and Writer Threads are finishing before closing.
+2018-11-13 11:12:39 INFO  ATorrent:59 - Server Process Terminated ...
+2018-11-13 11:15:20 INFO  ATorrent:22 - Program Started ...
+2018-11-13 11:15:20 INFO  ATorrent:35 - Server Created ...
+2018-11-13 11:15:20 INFO  ATorrent:36 - IP: 0.0.0.0/0.0.0.0
+2018-11-13 11:15:20 INFO  ATorrent:37 - Port: 57504
+2018-11-13 11:15:21 INFO  ATorrent:91 - CREATE TORRENT METADATA Pieces: 81 020BA879FA921ECCFEFF0C7CC7986ECD
+2018-11-13 11:27:43 INFO  ATorrent:22 - Program Started ...
+2018-11-13 11:27:43 INFO  ATorrent:35 - Server Created ...
+2018-11-13 11:27:43 INFO  ATorrent:36 - IP: 0.0.0.0/0.0.0.0
+2018-11-13 11:27:43 INFO  ATorrent:37 - Port: 57544
+2018-11-13 11:27:45 INFO  ATorrent:91 - CREATE TORRENT METADATA Pieces: 81 020BA879FA921ECCFEFF0C7CC7986ECD
+2018-11-13 11:33:43 INFO  ATorrent:22 - Program Started ...
+2018-11-13 11:33:43 INFO  ATorrent:35 - Server Created ...
+2018-11-13 11:33:43 INFO  ATorrent:36 - IP: 0.0.0.0/0.0.0.0
+2018-11-13 11:33:43 INFO  ATorrent:37 - Port: 57570
+2018-11-13 11:33:44 INFO  ATorrent:91 - CREATE TORRENT METADATA Pieces: 81 020BA879FA921ECCFEFF0C7CC7986ECD
+2018-11-13 11:34:16 INFO  ATorrent:25 - Peer Connected: /192.168.1.231:57570:56309
+2018-11-13 11:37:04 INFO  ATorrent:89 - Server disconnects ...
+2018-11-13 11:37:04 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 11:37:04 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 11:37:06 INFO  ATorrent:51 - Server, Reader and Writer Threads are finishing before closing.
+2018-11-13 11:37:06 INFO  ATorrent:60 - Server Process Terminated ...
+2018-11-13 11:38:07 INFO  ATorrent:22 - Program Started ...
+2018-11-13 11:38:07 INFO  ATorrent:35 - Server Created ...
+2018-11-13 11:38:07 INFO  ATorrent:36 - IP: 0.0.0.0/0.0.0.0
+2018-11-13 11:38:07 INFO  ATorrent:37 - Port: 57603
+2018-11-13 11:38:08 INFO  ATorrent:91 - CREATE TORRENT METADATA Pieces: 81 020BA879FA921ECCFEFF0C7CC7986ECD
+2018-11-13 11:39:47 INFO  ATorrent:25 - Peer Connected: /192.168.1.231:57603:57603
+2018-11-13 11:42:34 INFO  ATorrent:89 - Server disconnects ...
+2018-11-13 11:42:34 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 11:42:34 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 11:42:36 INFO  ATorrent:51 - Server, Reader and Writer Threads are finishing before closing.
+2018-11-13 11:42:36 INFO  ATorrent:60 - Server Process Terminated ...
