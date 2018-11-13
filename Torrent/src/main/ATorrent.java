@@ -18,17 +18,23 @@ public class ATorrent {
 		LOGGER.info("Program Started ...");
 		ATorrent aTorrent = new ATorrent();
 		boolean create = true;
-		create = false;
+//		create = false;
 		aTorrent.start(create);
 	}
 
 	public void start(boolean start) {
 		try {
-			String filename = TORRENT_ROOT_LOCATION + "torrent test\\test.txt";
+//			String filename = TORRENT_ROOT_LOCATION + "torrent test\\test.txt";
+//			String torrentFileName = TORRENT_ROOT_LOCATION + "test.temp";
+			
 //			String filename = TORRENT_ROOT_LOCATION + "Alpha";
-			String location = TORRENT_ROOT_LOCATION;
-			String torrentFileName = TORRENT_ROOT_LOCATION + "test.temp";
-//			String torrentFileName = TORRENT_ROOT_LOCATION + "Alpha.temp";
+//			String torrentFileName = TORRENT_ROOT_LOCATION + "Alpha.temp";	
+
+			String filename = System.getProperty("user.dir") + "/empty_20MB.txt";			
+			String torrentFileName =  System.getProperty("user.dir") + "/empty_20MB.temp";
+			String location = System.getProperty("user.dir") + "\\";
+			
+//			String location = TORRENT_ROOT_LOCATION;
 			String storeLocation = TORRENT_ROOT_LOCATION + "test\\";
 
 			// Load previous jobs from dat file
@@ -70,7 +76,7 @@ public class ATorrent {
 			TorrentProcessor processor = new TorrentProcessor();
 			Job job = processor.createMetadataFile(fileManager, filename, location, "Martin");
 			fileManager.contactTracker();
-			LOGGER.info("CREATE TORRENT METADATA " + job.getTorrentInfoHash());
+			LOGGER.info("CREATE TORRENT METADATA Pieces: " + job.numPieces() + " " + job.getTorrentInfoHash());
 		} catch (IOException e) {
 			LOGGER.fatal("Creating torrent failed.", e);
 		}
@@ -94,7 +100,7 @@ public class ATorrent {
 			DownloadManager downloadManager = new DownloadManager(job, fileManager);
 			Thread downloadManagerThread = new Thread(downloadManager, "Download Manager Thread");
 			downloadManagerThread.start();
-			LOGGER.info("LOAD TORRENT METADATA " + torrentMetadata.getInfoHash());
+			LOGGER.info("LOAD TORRENT METADATA Pieces: " + job.numPieces() + " " + torrentMetadata.getInfoHash());
 		} catch (ClassNotFoundException e) {
 			LOGGER.fatal("Data from loaded file are not a TorrentMetadata class type.", e);
 		} catch (IOException e) {

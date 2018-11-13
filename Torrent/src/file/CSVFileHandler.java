@@ -1,25 +1,40 @@
 package file;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class CSVFileHandler {
-	
-	private static String file = "statistics.csv";
+import org.apache.log4j.Logger;
 
-	public static void writeTime(String type, int index){
+import main.ATorrent;
+
+public class CSVFileHandler {
+
+	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
+
+	public static void writeTime(String type, int index) {
+
 		try {
-			FileWriter fileWriter = new FileWriter(file);
+			File file = new File("statistics.csv");
+			FileWriter fileWriter;
+			if (file.exists()) {
+				fileWriter = new FileWriter(file, true);// if file exists append to file. Works fine.
+			} else {
+				file.createNewFile();
+				fileWriter = new FileWriter(file);
+			}
 			fileWriter.append(type);
 			fileWriter.append(",");
 			fileWriter.append(index + "");
 			fileWriter.append(",");
+			fileWriter.append(System.currentTimeMillis() + " ms");
+			fileWriter.append(",");
 			fileWriter.append(System.currentTimeMillis() + "");
-			fileWriter.append("/n");
+			fileWriter.append(",");
+			fileWriter.append("\n");
 			fileWriter.close();
 		} catch (IOException e) {
-//			e.printStackTrace();
-			System.out.println("ERROR");
+			LOGGER.error("Writing into file failed.", e);
 		}
 	}
 }

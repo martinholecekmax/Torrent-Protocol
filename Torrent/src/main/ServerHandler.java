@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
+import file.CSVFileHandler;
 import file.FileManager;
 
 public class ServerHandler implements Runnable {
@@ -72,9 +73,9 @@ public class ServerHandler implements Runnable {
 				byte[] data = piece.getData();
 				if (data != null) {
 					String dataEncoded = new String(Base64.encodeBase64(data));
-
-//					CSVFileHandler.writeTime("Send", index);
-
+					
+					// TEST time of receiving
+					CSVFileHandler.writeTime("Send", index);
 					state.enqueueWrite("HAVEPIECE " + infoHash + " " + index + " " + dataEncoded);
 				} else {
 					// FILE MANAGER DOESN'T HAVE FILE
@@ -85,8 +86,10 @@ public class ServerHandler implements Runnable {
 				LOGGER.info("KEEPALIVE from client");
 			} else if (message.startsWith("DISCONNECT")) {
 				LOGGER.info("Server disconnects ...");
-				state.enqueueWrite("DISCONNECTED");
+//				state.enqueueWrite("DISCONNECTED");
 				Thread.sleep(100);
+				state.clearReadQueue();
+				state.clearWriteQueue();
 				state.setKill(true);
 			} else {
 				LOGGER.warn("SYNTAX ERROR " + message);

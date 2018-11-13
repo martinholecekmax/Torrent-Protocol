@@ -16,7 +16,7 @@ import main.Job;
 import main.Peer;
 import main.Piece;
 import main.TorrentMetadata;
-import tracker.TrackerClient;
+import tracker.TrackerClientSSL;
 
 /**
  * Create torrent job which is saved into resume.dat file.
@@ -251,7 +251,7 @@ public class FileManager {
 	public void contactTracker() {
 		for (Job job : jobs) {
 			if (job.isDone()) {
-				TrackerClient.getResponse(job.getTorrentMetadata(), peer, job.getStatus());
+				TrackerClientSSL.getResponse(job.getTorrentMetadata(), peer, job.getStatus());
 			}
 		}
 	}

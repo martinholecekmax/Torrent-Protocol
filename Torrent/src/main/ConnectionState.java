@@ -71,6 +71,18 @@ public class ConnectionState {
 		return !kill;
 	}
 
+	public void clearWriteQueue() {
+		synchronized (writeQueueLock) {
+			writeQueue.clear();
+		}		
+	}
+	
+	public void clearReadQueue() {
+		synchronized (readQueueLock) {
+			readQueue.clear();
+		}		
+	}
+	
 	public void terminate() throws IOException {
 		socket.close();
 	}

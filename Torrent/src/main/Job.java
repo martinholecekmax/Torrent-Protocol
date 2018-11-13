@@ -73,6 +73,10 @@ public class Job implements Serializable {
 	public ArrayList<Piece> getPieces() {
 		return pieces;
 	}
+	
+	public int numPieces() {
+		return pieces.size();
+	}
 
 	public ArrayList<File> getFiles() {
 		return files;

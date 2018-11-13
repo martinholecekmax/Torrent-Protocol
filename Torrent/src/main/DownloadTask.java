@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
+import file.CSVFileHandler;
 import file.FileManager;
 import utils.Utility;
 
@@ -43,9 +44,9 @@ public class DownloadTask implements Runnable {
 		writerThread.start();
 
 		while (state.isAlive()) {
-			processRead();
-			processWrite();
 			try {
+				processRead();
+				processWrite();
 				Thread.sleep(job.getBandwidth());
 			} catch (InterruptedException e) {
 				LOGGER.error("Thread sleep has been interrupted.", e);
@@ -69,12 +70,11 @@ public class DownloadTask implements Runnable {
 
 	/**
 	 * Process response from Peer.
+	 * @throws InterruptedException 
 	 */
-	public void processRead() {
+	public void processRead() throws InterruptedException {
 		if (state.hasRead()) {
 			String message = state.dequeueRead();
-
-			// HAVEPIECE FILE_ID_HASH PIECE_ID <PIECE DATA>
 			if (message.startsWith("HAVEPIECE")) {
 				String[] messageSplit = message.split(" ");
 				String infoHash = messageSplit[1].trim();
@@ -90,19 +90,17 @@ public class DownloadTask implements Runnable {
 				if (stored) {
 					LOGGER.info("Piece: " + piece.getIndex() + " stored successfully!");
 				} else {
-//					job.enquePiece(piece);
 					LOGGER.info("Piece: " + index + " hasn't been stored!");
 				}
-
-//				CSVFileHandler.writeTime("Reieved", index);
-			} else if (message.startsWith("NOPIECE")) {
-				// NOTIFY FILE MANAGER THAT PEER DOESN'T HAVE PIECE
-//				String[] messageSplit = message.split(" ");
-//				int index = Integer.parseInt(messageSplit[2].trim());
-//				job.enquePiece(job.getPieceWithoutData(index));
+				// TEST time of receiving
+				CSVFileHandler.writeTime("Reieved", index);
+			} else if (message.startsWith("NOPIECE")) {				
 				LOGGER.info("This peer doesn't have a piece: " + message);
 			} else if (message.startsWith("DISCONNECTED")) {
-				LOGGER.info("Client disconnects ...");
+				LOGGER.info("Client received disconnect ...");
+				Thread.sleep(100);
+//				state.clearReadQueue();
+//				state.clearWriteQueue();
 				state.setKill(true);
 			} else {
 				LOGGER.warn("SYNTAX ERROR " + message);
@@ -112,24 +110,17 @@ public class DownloadTask implements Runnable {
 
 	/**
 	 * Ask Peer for Piece.
+	 * @throws InterruptedException 
 	 */
-	public void processWrite() {
-		// ASK FILE MANAGER IF NEEDS PIECE
-//		if (job.hasPiece()) {
-//			Piece piece = job.dequePiece();
-//			String infoHash = job.getTorrentInfoHash();
-//			if (piece != null) {
-//				state.enqueueWrite("PIECEEXISTS " + infoHash + " " + piece.getIndex());
-//			}
-//		} else if (job.isJobDone() && state.isAlive()) {
-//			LOGGER.info("Client sends disconnect");
-//			state.enqueueWrite("DISCONNECT");
-//		} 
-		
+	public void processWrite() throws InterruptedException {		
 		if (job.isJobDone() && state.isAlive()) {
 			LOGGER.info("Client sends disconnect");
-			state.enqueueWrite("DISCONNECT");
-		} else {
+//			state.enqueueWrite("DISCONNECT");
+			Thread.sleep(100);
+//			state.clearReadQueue();
+//			state.clearWriteQueue();
+			state.setKill(true);	
+		} else if(!job.isDone()){
 			Piece piece = job.findLessSeenPiece();
 			if (piece != null) {
 				String infoHash = job.getTorrentInfoHash();

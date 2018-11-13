@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 
 import file.FileManager;
-import tracker.TrackerClient;
+import tracker.TrackerClientSSL;
 import tracker.TrackerResponse;
 
 public class DownloadManager implements Runnable{
@@ -39,14 +39,14 @@ public class DownloadManager implements Runnable{
 	
 	@Override
 	public void run() {
-		while(!job.isJobDone()) {
+		while(!job.isDone()) {
 			try {
-				TrackerResponse response = TrackerClient.getResponse(job.getTorrentMetadata(), client, job.getStatus());
+				TrackerResponse response = TrackerClientSSL.getResponse(job.getTorrentMetadata(), client, job.getStatus());
 				if (response != null) {
 					peers = response.getPeers();
 					interval = response.getInterval();					
+					createDownloadTasks(peers);
 				}
-				createDownloadTasks(peers);
 				Thread.sleep(interval);
 			} catch (InterruptedException e) {
 				LOGGER.warn("Thread sleep has been interrupted.", e);
@@ -63,7 +63,7 @@ public class DownloadManager implements Runnable{
 	 */
 	public void createDownloadTasks(ArrayList<Peer> peers) {
 		for (Peer peer : peers) {
-			try {
+			try {				
 				// Don't connect to same program, get public ip address
 				if (peer.getPeerID().equals(client.getPeerID())) {
 					client.setIpAddress(peer.getIpAddress());
@@ -75,6 +75,9 @@ public class DownloadManager implements Runnable{
 					continue;
 				}
 				
+				if(job.isDone()){
+					break;
+				}
 				// Check if is localhost
 				Socket socket = null;
 				if (peer.getIpAddress().equals(client.getIpAddress())) {
@@ -92,10 +95,10 @@ public class DownloadManager implements Runnable{
 				
 				LOGGER.info("Peer Connected: " + peer.getPeerID() + peer.getIpAddress() + ":" + peer.getPort());
 			} catch (UnknownHostException e) {
-				LOGGER.debug("Couldn't connect to a peer.", e);
+				LOGGER.debug("Couldn't connect to a peer.");
 				continue;
 			} catch (IOException e) {
-				LOGGER.debug("Couldn't create client socket.", e);
+				LOGGER.debug("Couldn't create client socket.");
 				continue;
 			}
 		}
