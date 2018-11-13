@@ -2,6 +2,7 @@ package main;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 
@@ -19,11 +20,12 @@ public class Reader implements Runnable {
 	public void run() {
 		try {
 			this.input = new DataInputStream(state.getSocket().getInputStream());
-			String message = "";
 			while (state.isAlive()) {
 				if (input.available() > 0) {
-					message = read();
-					state.enqueueRead(message);
+					Optional<String> message = read();
+					if (message.isPresent()) {
+						state.enqueueRead(message.get());						
+					}
 				}
 				try {
 					Thread.sleep(1);
@@ -39,17 +41,16 @@ public class Reader implements Runnable {
 		}
 	}
 
-	public synchronized String read() throws IOException {
+	public synchronized Optional<String> read() throws IOException {
 		int length = input.readInt();
-		byte[] message = null;
-		String data;
 		if (length > 0) {
-			message = new byte[length];
+			byte[] message = new byte[length];
 			input.readFully(message, 0, message.length); // read the message
+			String data;
 			data = new String(message, "UTF-8");
+			return Optional.of(data);
 		} else {
-			data = "";
+			return Optional.empty();
 		}
-		return data;
 	}
 }

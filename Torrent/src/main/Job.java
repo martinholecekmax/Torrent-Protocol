@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import file.FileHandler;
 import utils.Utility;
@@ -73,7 +74,7 @@ public class Job implements Serializable {
 	public ArrayList<Piece> getPieces() {
 		return pieces;
 	}
-	
+
 	public int numPieces() {
 		return pieces.size();
 	}
@@ -121,21 +122,23 @@ public class Job implements Serializable {
 	 * 
 	 * @return instance of Piece class.
 	 */
-	public Piece findLessSeenPiece() {
-		Piece lessSeenPiece = null;
+	public Optional<Piece> findLessSeenPiece() {
+		Optional<Piece> lessSeenPiece = Optional.empty();
 		for (Piece piece : pieces) {
 			if (piece.isStored()) {
 				continue;
 			}
-			if (lessSeenPiece == null) {
-				lessSeenPiece = piece;
+			if (!lessSeenPiece.isPresent()) {
+				lessSeenPiece = Optional.of(piece);
+				continue;
 			}
-			if (piece.getSeen() < lessSeenPiece.getSeen()) {
-				lessSeenPiece = piece;
+			
+			if (piece.getSeen() < lessSeenPiece.get().getSeen()) {
+				lessSeenPiece = Optional.of(piece);
 			}
 		}
-		if (lessSeenPiece != null) {
-			pieces.get(pieces.indexOf(lessSeenPiece)).addSeen();
+		if (lessSeenPiece.isPresent()) {
+			pieces.get(pieces.indexOf(lessSeenPiece.get())).addSeen();
 //			status.setUploaded(PIECE_SIZE); TODO
 		} else {
 			setDone(true);
@@ -179,21 +182,21 @@ public class Job implements Serializable {
 	 */
 	private boolean storeValidPiece(Piece piece) {
 		try {
-			FileHandler.storePiece(files, piece.getData(), piece.getIndex());
+			FileHandler.storePiece(files, piece.getData().get(), piece.getIndex());
 			return true;
 		} catch (IOException e) {
 			return false;
 		}
 	}
 
-	public Piece getPieceWithoutData(int index) {
+	public Optional<Piece> getPieceWithoutData(int index) {
 		for (Piece piece : pieces) {
 			if (piece.getIndex() == index) {
-				return piece;
+				return Optional.of(piece);
 			}
 		}
 		System.err.println("Error get piece " + index);
-		return null;
+		return Optional.empty();
 	}
 
 	/**
@@ -201,22 +204,23 @@ public class Job implements Serializable {
 	 * 
 	 * @param index - offset bytes in the file
 	 * @return instance of a Piece class if index valid and file can be read,
-	 *         otherwise, return null instance.
+	 *         otherwise, return empty Optional instance.
 	 */
-	public Piece getPiece(int index) {
+	public Optional<Piece> getPiece(int index) {
 		try {
 			if (pieces.get(index).isStored()) {
 				byte[] data = new byte[PIECE_SIZE];
 				data = FileHandler.getPiece(files, index);
-				if (data != null) {
-					Piece piece = new Piece(index, Utility.getHahSHA1(data));
+				String hash = Utility.getHahSHA1(data);
+				if (!hash.isEmpty()) {
+					Piece piece = new Piece(index, hash);
 					piece.setData(data);
-					return piece;
+					return Optional.of(piece);					
 				}
 			}
-			return null;
+			return Optional.empty();
 		} catch (IOException e) {
-			return null;
+			return Optional.empty();
 		}
 	}
 

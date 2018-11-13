@@ -197,11 +197,15 @@ public class TorrentMainWindow extends JFrame implements ActionListener{
 			throws IOException, ClassNotFoundException {
 		TorrentProcessor processor = new TorrentProcessor();
 		TorrentMetadata torrentMetadata = processor.loadMetadataFile(torrentFileName);
-		Job job = fileManager.createJob(torrentMetadata, storeLocation);
-		DownloadManager downloadManager = new DownloadManager(job, fileManager);
-		Thread downloadManagerThread = new Thread(downloadManager, "Download Manager Thread");
-		downloadManagerThread.start();
-		System.out.println("LOAD TORRENT METADATA");
+		Optional<Job> job = fileManager.createJob(torrentMetadata, storeLocation);
+		if (job.isPresent()) {
+			DownloadManager downloadManager = new DownloadManager(job.get(), fileManager);
+			Thread downloadManagerThread = new Thread(downloadManager, "Download Manager Thread");
+			downloadManagerThread.start();
+			System.out.println("LOAD TORRENT METADATA");			
+		} else {
+			System.out.println("Error in loading a job.");
+		}
 	}
 
 	@Override

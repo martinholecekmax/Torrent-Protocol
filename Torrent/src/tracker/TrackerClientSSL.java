@@ -49,13 +49,12 @@ public class TrackerClientSSL {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public static TrackerResponse getResponse(TorrentMetadata torrentMetadata, Peer peer, TorrentStatus status) {
-		TrackerResponse response = null;
+	public static Optional<TrackerResponse> getResponse(TorrentMetadata torrentMetadata, Peer peer,
+			TorrentStatus status) {
 		try {
 			TrackerClientSSL trackerClient = new TrackerClientSSL();
 			String params = trackerClient.buildParamsQuery(trackerClient.createParams(torrentMetadata, peer, status));
-			response = trackerClient.parseResponse(torrentMetadata.getAnnounce(), params);
-			return response;
+			return trackerClient.parseResponse(torrentMetadata.getAnnounce(), params);
 		} catch (MalformedURLException e) {
 			LOGGER.error("Trying to encode URL to UTF-8 failed.", e);
 		} catch (IOException e) {
@@ -63,7 +62,7 @@ public class TrackerClientSSL {
 		} catch (JSONException e) {
 			LOGGER.error("Error, parsing json.", e);
 		}
-		return response;
+		return Optional.empty();
 	}
 
 	/**
@@ -75,28 +74,30 @@ public class TrackerClientSSL {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	private TrackerResponse parseResponse(String announce, String params) throws IOException, JSONException {
-		String json = jsonGetRequest(announce + params);
-		if (json.isEmpty()) {
-			return null;
+	private Optional<TrackerResponse> parseResponse(String announce, String params) throws IOException, JSONException {
+		Optional<String> json = jsonGetRequest(announce + params);
+		if (json.isPresent()) {			
+			ArrayList<Peer> peersList = new ArrayList<>();
+			JSONObject jsonObject = new JSONObject(json.get());
+			int interval = jsonObject.getInt("interval");
+			JSONArray peers = jsonObject.getJSONArray("peers");
+			String peerID = "";
+			String ipAddress = "";
+			String localIP = "";
+			int port = 0;
+			for (int i = 0; i < peers.length(); i++) {
+				peerID = peers.getJSONObject(i).getString("peer_id");
+				ipAddress = peers.getJSONObject(i).getString("ip");
+				localIP = peers.getJSONObject(i).getString("local_ip");
+				port = peers.getJSONObject(i).getInt("port");
+				Peer peer = new Peer(Optional.of(peerID), ipAddress, localIP, port);
+				peersList.add(peer);
+			}
+			TrackerResponse response = new TrackerResponse(peersList, interval);
+			return Optional.of(response);
+		} else {
+			return Optional.empty();
 		}
-		ArrayList<Peer> peersList = new ArrayList<>();
-		JSONObject jsonObject = new JSONObject(json);
-		int interval = jsonObject.getInt("interval");
-		JSONArray peers = jsonObject.getJSONArray("peers");
-		String peerID = "";
-		String ipAddress = "";
-		String localIP = "";
-		int port = 0;
-		for (int i = 0; i < peers.length(); i++) {
-			peerID = peers.getJSONObject(i).getString("peer_id");			
-			ipAddress = peers.getJSONObject(i).getString("ip");
-			localIP = peers.getJSONObject(i).getString("local_ip");
-			port = peers.getJSONObject(i).getInt("port");
-			Peer peer = new Peer(Optional.of(peerID), ipAddress, localIP, port);
-			peersList.add(peer);
-		}
-		return new TrackerResponse(peersList, interval);
 	}
 
 	/**
@@ -166,7 +167,7 @@ public class TrackerClientSSL {
 	 * @throws NoSuchAlgorithmException
 	 * @throws KeyManagementException
 	 */
-	private String jsonGetRequest(String urlQueryString) {
+	private Optional<String> jsonGetRequest(String urlQueryString) {
 		try {
 			TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 				@Override
@@ -200,7 +201,7 @@ public class TrackerClientSSL {
 
 			// Install the all-trusting host verifier
 			HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-			
+
 			String json = "";
 			URL url = new URL(urlQueryString);
 //			URL url = new URL("https://commerce3.derby.ac.uk/~st100344605/api/announce?peer_id=PEERID123&port=123&info_hash=filehash1&event=stopped&downloaded=0&uploaded=10&left=123");
@@ -213,7 +214,7 @@ public class TrackerClientSSL {
 				}
 				json = json + (char) ch;
 			}
-			return json;
+			return Optional.of(json);
 		} catch (NoSuchAlgorithmException e) {
 			LOGGER.error(e);
 		} catch (MalformedURLException e) {
@@ -223,6 +224,6 @@ public class TrackerClientSSL {
 		} catch (KeyManagementException e) {
 			LOGGER.error(e);
 		}
-		return "";
+		return Optional.empty();
 	}
 }

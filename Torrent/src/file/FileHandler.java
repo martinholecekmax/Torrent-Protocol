@@ -271,11 +271,6 @@ public class FileHandler {
 		ArrayList<String> filenames = new ArrayList<>();
 		for (File file : files) {
 			filenames.add(rootDirectory.toURI().relativize(file.toURI()).getPath());
-
-			// Other way of doing same thing
-			// Path pathAbsolute = Paths.get("/var/data/stuff/xyz.dat");
-			// Path pathBase = Paths.get("/var/data");
-			// Path pathRelative = pathBase.relativize(pathAbsolute);
 		}
 		return filenames;
 	}
@@ -387,7 +382,6 @@ public class FileHandler {
 	 */
 	public int calculateNumPieces(long length, int pieceSize) {
 		return (int) Math.floor((double) length / pieceSize);
-//		return (int) Math.ceil((double) length / pieceSize);
 	}
 
 	/**
@@ -531,7 +525,7 @@ public class FileHandler {
 		FileOutputStream fileOutputStream = new FileOutputStream(concatFile);
 		for (File file : files) {
 			FileInputStream fileInputStream = new FileInputStream(file);
-//			fileOutputStream.write(fileInputStream.readAllBytes());
+			// fileOutputStream.write(fileInputStream.readAllBytes()); // Not supported in JDK 1.8
 			fileInputStream.close();
 		}
 		fileOutputStream.close();

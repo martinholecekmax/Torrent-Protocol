@@ -3,6 +3,7 @@ package main;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Queue;
 
 public class ConnectionState {
@@ -61,9 +62,9 @@ public class ConnectionState {
 		}
 	}
 
-	public String dequeueWrite() {
+	public Optional<String> dequeueWrite() {
 		synchronized (writeQueueLock) {
-			return writeQueue.poll();
+			return Optional.of(writeQueue.poll());
 		}
 	}
 

@@ -5,6 +5,7 @@ import static utils.Constants.*;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
@@ -22,7 +23,7 @@ public class ServerHandler implements Runnable {
 	private FileManager fileManager;
 
 	public ServerHandler(Socket socket, ArrayList<Socket> connections, FileManager fileManager) {
-		LOGGER.info("Peer Connected: " + socket.getLocalSocketAddress() + ":" + socket.getLocalPort());		
+		LOGGER.info("Server -> Peer Connected: " + socket.getRemoteSocketAddress());		
 		state = new ConnectionState(socket);
 		reader = new Reader(state);
 		writer = new Writer(state);
@@ -70,21 +71,28 @@ public class ServerHandler implements Runnable {
 				String[] messageSplit = message.split(" ");
 				String infoHash = messageSplit[1].trim();
 				int index = Integer.parseInt(messageSplit[2].trim());
-				Piece piece = fileManager.getPiece(infoHash, index);
-				byte[] data = piece.getData();
-				if (data != null) {
-					String dataEncoded = new String(Base64.encodeBase64(data));
-					
-					// TEST time of receiving
-					CSVFileHandler.writeTime("Send", index);
-					state.enqueueWrite("HAVEPIECE " + infoHash + " " + index + " " + dataEncoded);
-				} else {
-					// FILE MANAGER DOESN'T HAVE FILE
-					state.enqueueWrite("NOPIECE " + infoHash + " " + index);
+				Optional<Piece> piece = fileManager.getPiece(infoHash, index);
+				if (!piece.isPresent()) {
+					state.enqueueWrite("NOPIECE " + infoHash + " " + index);					
 				}
-
+				else if (piece.isPresent()) {
+					Optional<byte[]> data = piece.get().getData();
+					if (data.isPresent()) {
+						String dataEncoded = new String(Base64.encodeBase64(data.get()));
+						
+						// TEST time of receiving
+						CSVFileHandler.writeTime("Send", index);
+						state.enqueueWrite("HAVEPIECE " + infoHash + " " + index + " " + dataEncoded);						
+					} else {
+						state.enqueueWrite("NOPIECE " + infoHash + " " + index);
+						LOGGER.error("Data not present.");
+					}
+				} else {
+					state.enqueueWrite("NOPIECE " + infoHash + " " + index);
+					LOGGER.trace("Piece not present.");
+				}
 			} else if (message.startsWith("KEEPALIVE")) {
-				LOGGER.info("KEEPALIVE from client");
+				LOGGER.trace("KEEPALIVE from client");
 			} else if (message.startsWith("DISCONNECT")) {
 				LOGGER.info("Server disconnects ...");
 //				state.enqueueWrite("DISCONNECTED");

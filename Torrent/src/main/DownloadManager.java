@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,11 +42,11 @@ public class DownloadManager implements Runnable {
 	public void run() {
 		while (!job.isDone()) {
 			try {
-				TrackerResponse response = TrackerClientSSL.getResponse(job.getTorrentMetadata(), client,
+				Optional<TrackerResponse> response = TrackerClientSSL.getResponse(job.getTorrentMetadata(), client,
 						job.getStatus());
-				if (response != null) {
-					peers = response.getPeers();
-					interval = response.getInterval();
+				if (response.isPresent()) {
+					peers = response.get().getPeers();
+					interval = response.get().getInterval();
 					createDownloadTasks(peers);
 				}
 				Thread.sleep(interval);
@@ -65,6 +66,10 @@ public class DownloadManager implements Runnable {
 	public void createDownloadTasks(ArrayList<Peer> peers) {
 		for (Peer peer : peers) {
 			try {
+				if (job.isDone()) {
+					break;
+				}
+				
 				// Don't connect to same program, get public ip address
 				if (peer.getPeerID().equals(client.getPeerID())) {
 					client.setIpAddress(peer.getIpAddress());
@@ -74,10 +79,6 @@ public class DownloadManager implements Runnable {
 				// Don't create new task if peer is already connected
 				if (connectedPeers.contains(peer)) {
 					continue;
-				}
-
-				if (job.isDone()) {
-					break;
 				}
 
 				// Check if is localhost
@@ -94,8 +95,7 @@ public class DownloadManager implements Runnable {
 
 				Thread thread = new Thread(task, "Download task thread");
 				thread.start();
-
-				LOGGER.info("Peer Connected: " + peer.getPeerID() + peer.getIpAddress() + ":" + peer.getPort());
+				
 			} catch (UnknownHostException e) {
 				LOGGER.debug("Couldn't connect to a peer.");
 				continue;

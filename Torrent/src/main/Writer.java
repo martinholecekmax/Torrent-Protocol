@@ -2,6 +2,7 @@ package main;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 
@@ -22,10 +23,9 @@ public class Writer implements Runnable {
 
 			while (state.isAlive()) {
 				while (state.hasWrite()) {
-					String message = state.dequeueWrite();
-					// if queue is empty then don't send message
-					if (message != null && message.length() > 0) {
-						writeOut(message);
+					Optional<String> message = state.dequeueWrite();
+					if (message.isPresent() && message.get().length() > 0) {						
+						writeOut(message.get());
 					}
 				}
 				try {

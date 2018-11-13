@@ -11,7 +11,6 @@ public class TorrentMetadata implements Serializable {
 	private TorrentFileInfo info;
 	private String createdBy;
 	private Date createdAt;
-	private String encoding = "UTF-8";
 	private String infoHash;
 
 	/**
@@ -27,19 +26,12 @@ public class TorrentMetadata implements Serializable {
 	 * @param encoding  - If this field is null, then default encoding is UTF-8
 	 *                  (This field is not implemented)
 	 */
-	public TorrentMetadata(String announce, TorrentFileInfo info, String createdBy, Date createdAt, String encoding) {
+	public TorrentMetadata(String announce, TorrentFileInfo info, String createdBy, Date createdAt) {
 		this.announce = announce;
 		this.info = info;
 		this.createdBy = createdBy;
-		this.createdAt = createdAt;
-		if (encoding != null) {
-			this.encoding = encoding;
-		}
+		this.createdAt = createdAt;			
 		this.infoHash = Utility.generateChecksum(info);
-	}
-
-	public TorrentMetadata(String announce, TorrentFileInfo info, String createdBy, Date createdAt) {
-		this(announce, info, createdBy, createdAt, null);
 	}
 
 	public String getAnnounce() {
@@ -62,13 +54,9 @@ public class TorrentMetadata implements Serializable {
 		return createdAt;
 	}
 
-	public String getEncoding() {
-		return encoding;
-	}
-
 	@Override
 	public String toString() {
 		return "TorrentMetadata: \nannounce:" + announce + "\ncreatedBy:" + createdBy + "\ncreatedAt:" + createdAt
-				+ "\nencoding:" + encoding + "\ninfo: {" + info + "\n}";
+				+ "\ninfo: {" + info + "\n}";
 	}
 }

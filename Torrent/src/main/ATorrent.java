@@ -22,7 +22,7 @@ public class ATorrent {
 		LOGGER.info("Program Started ...");
 		ATorrent aTorrent = new ATorrent();
 		boolean create = true;
-//		create = false;
+		create = false;
 		aTorrent.start(create);
 	}
 
@@ -108,11 +108,15 @@ public class ATorrent {
 			TorrentProcessor processor = new TorrentProcessor();
 			TorrentMetadata torrentMetadata;
 			torrentMetadata = processor.loadMetadataFile(torrentFileName);
-			Job job = fileManager.createJob(torrentMetadata, storeLocation);
-			DownloadManager downloadManager = new DownloadManager(job, fileManager);
-			Thread downloadManagerThread = new Thread(downloadManager, "Download Manager Thread");
-			downloadManagerThread.start();
-			LOGGER.info("LOAD TORRENT METADATA Pieces: " + job.numPieces() + " " + torrentMetadata.getInfoHash());
+			Optional<Job> job = fileManager.createJob(torrentMetadata, storeLocation);
+			if (job.isPresent()) {
+				DownloadManager downloadManager = new DownloadManager(job.get(), fileManager);
+				Thread downloadManagerThread = new Thread(downloadManager, "Download Manager Thread");
+				downloadManagerThread.start();				
+				LOGGER.info("LOAD TORRENT METADATA Pieces: " + job.get().numPieces() + " " + torrentMetadata.getInfoHash());
+			} else {				
+				LOGGER.fatal("Job creation failed.");
+			}
 		} catch (ClassNotFoundException e) {
 			LOGGER.fatal("Data from loaded file are not a TorrentMetadata class type.", e);
 		} catch (IOException e) {

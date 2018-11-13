@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 
@@ -67,13 +68,13 @@ public class FileManager {
 		return jobs.get(index);
 	}
 
-	public Job getJobByMetadata(TorrentMetadata torrentMetadata) {
+	public Optional<Job> getJobByMetadata(TorrentMetadata torrentMetadata) {
 		for (Job job : jobs) {
 			if (job.getTorrentMetadata() == torrentMetadata) {
-				return job;
+				return Optional.of(job);
 			}
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	public boolean add(Job e) {
@@ -115,21 +116,20 @@ public class FileManager {
 	 * @param infoHash - String Hash of the metadata file's info field.
 	 * @param index    - Offset of the file where to get data from.
 	 * @return Piece with data if info hash and index are valid, otherwise, return
-	 *         piece where data are null.
+	 *         piece where data are empty.
 	 */
-	public Piece getPiece(String infoHash, int index) {
-		Piece pieceEmpty = new Piece(index, infoHash);
+	public Optional<Piece> getPiece(String infoHash, int index) {
 		synchronized (pieceLock) {
 			for (Job job : jobs) {
 				if (job.getTorrentInfoHash().equals(infoHash)) {
-					Piece piece = job.getPiece(index);
-					if (piece != null) {
+					Optional<Piece> piece = job.getPiece(index);
+					if (piece.isPresent()) {
 						return piece;
 					}
 					break;
 				}
 			}
-			return pieceEmpty;
+			return Optional.empty();
 		}
 	}
 
@@ -142,14 +142,14 @@ public class FileManager {
 	 *         return False, if a directories is already in jobs.
 	 * @throws IOException
 	 */
-	public Job createJob(TorrentMetadata torrentMetadata, String whereToStore) throws IOException {
+	public Optional<Job> createJob(TorrentMetadata torrentMetadata, String whereToStore) throws IOException {
 		synchronized (jobsLock) {
 			if (!jobExists(torrentMetadata)) {
 				ArrayList<File> files = fileHandler.createFileStructure(torrentMetadata, whereToStore);
 				Job job = new Job(torrentMetadata.getInfo().getPieces(), files, torrentMetadata);
 				add(job);
 				saveJobs();
-				return job;
+				return Optional.of(job);
 			} else {
 				return getJobByMetadata(torrentMetadata);
 			}

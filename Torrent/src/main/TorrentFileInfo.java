@@ -51,13 +51,6 @@ public class TorrentFileInfo implements Serializable {
 		return pieces;
 	}
 
-	public Piece getSinglePiece(int index) {
-		if (index < pieces.size() && index >= 0) {
-			return pieces.get(index);
-		}
-		return null;
-	}
-
 	public long getLength() {
 		return length;
 	}

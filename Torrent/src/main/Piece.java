@@ -1,6 +1,7 @@
 package main;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import utils.Utility;
 
@@ -11,7 +12,8 @@ public class Piece implements Comparable<Piece>, Serializable {
 	private int seen;
 	private boolean stored;
 	private boolean valid;
-	private byte[] data;
+	transient private Optional<byte[]> data;
+	private boolean dataLoaded;
 
 	public Piece(int index, String hash) {
 		this.index = index;
@@ -19,15 +21,17 @@ public class Piece implements Comparable<Piece>, Serializable {
 		this.setSeen(0);
 		this.stored = false;
 		this.valid = false;
-		this.data = null;
+		this.data = Optional.empty();
+		this.setDataLoaded(false);
 	}
 
-	public byte[] getData() {
+	public Optional<byte[]> getData() {
 		return data;
 	}
 
 	public void setData(byte[] data) {
-		this.data = data;
+		this.data = Optional.of(data);
+		this.setDataLoaded(true);
 	}
 
 	public int getIndex() {
@@ -58,6 +62,14 @@ public class Piece implements Comparable<Piece>, Serializable {
 		this.stored = stored;
 	}
 
+	public boolean areDataLoaded() {
+		return dataLoaded;
+	}
+
+	public void setDataLoaded(boolean dataLoaded) {
+		this.dataLoaded = dataLoaded;
+	}
+
 	public boolean isValid() {
 		return valid;
 	}
@@ -74,15 +86,19 @@ public class Piece implements Comparable<Piece>, Serializable {
 	 *         file. Otherwise, return false.
 	 */
 	public boolean validate(Piece piece) {
-		String hash = Utility.getHahSHA1(piece.getData());
-		if (hash.equals(this.hash)) {
-			this.valid = true;
-		} else {
-			this.valid = false;
+		if (piece.getData().isPresent()) {
+			String hash = Utility.getHahSHA1(piece.getData().get());
+			if (!hash.isEmpty()) {
+				if (hash.equals(this.hash)) {
+					this.valid = true;
+				} else {
+					this.valid = false;
+				}				
+			}
 		}
 		return this.isValid();
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

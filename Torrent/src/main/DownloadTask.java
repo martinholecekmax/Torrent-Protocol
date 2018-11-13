@@ -5,6 +5,7 @@ import static utils.Constants.PIECE_SIZE;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
@@ -37,7 +38,8 @@ public class DownloadTask implements Runnable {
 	@Override
 	public void run() {
 		connectedPeers.add(peer);
-
+		LOGGER.info("Client -> Peer Connected: " + peer.getIpAddress() + ":" + peer.getPort() + " " + peer.getPeerID());
+		
 		Thread readerThread = new Thread(reader, "Client Reader Thread");
 		Thread writerThread = new Thread(writer, "Client Writer Thread");
 		readerThread.start();
@@ -83,25 +85,24 @@ public class DownloadTask implements Runnable {
 
 				byte[] data = new byte[PIECE_SIZE];
 				data = Base64.decodeBase64(dataUTF.getBytes());
-				Piece piece = new Piece(index, Utility.getHahSHA1(data));
-				piece.setData(data);
-
-				boolean stored = fileManager.storePiece(infoHash, piece);
-				if (stored) {
-					LOGGER.info("Piece: " + piece.getIndex() + " stored successfully!");
+				String hash = Utility.getHahSHA1(data);
+				if (!hash.isEmpty()) {
+					Piece piece = new Piece(index, hash);
+					piece.setData(data);					
+					boolean stored = fileManager.storePiece(infoHash, piece);
+					if (stored) {
+						LOGGER.trace("Piece: " + piece.getIndex() + " stored successfully!");
+					} else {
+						LOGGER.trace("Piece: " + index + " hasn't been stored!");
+					}
 				} else {
-					LOGGER.info("Piece: " + index + " hasn't been stored!");
+					LOGGER.error("Generating of piece hash failed!");					
 				}
+
 				// TEST time of receiving
 				CSVFileHandler.writeTime("Reieved", index);
 			} else if (message.startsWith("NOPIECE")) {				
-				LOGGER.info("This peer doesn't have a piece: " + message);
-			} else if (message.startsWith("DISCONNECTED")) {
-				LOGGER.info("Client received disconnect ...");
-				Thread.sleep(100);
-//				state.clearReadQueue();
-//				state.clearWriteQueue();
-				state.setKill(true);
+				LOGGER.trace("This peer doesn't have a piece: " + message);
 			} else {
 				LOGGER.warn("SYNTAX ERROR " + message);
 			}
@@ -115,16 +116,16 @@ public class DownloadTask implements Runnable {
 	public void processWrite() throws InterruptedException {		
 		if (job.isJobDone() && state.isAlive()) {
 			LOGGER.info("Client sends disconnect");
-//			state.enqueueWrite("DISCONNECT");
+			state.enqueueWrite("DISCONNECT");
 			Thread.sleep(100);
 //			state.clearReadQueue();
 //			state.clearWriteQueue();
 			state.setKill(true);	
 		} else if(!job.isDone()){
-			Piece piece = job.findLessSeenPiece();
-			if (piece != null) {
+			Optional<Piece> piece = job.findLessSeenPiece();
+			if (piece.isPresent()) {
 				String infoHash = job.getTorrentInfoHash();
-				state.enqueueWrite("PIECEEXISTS " + infoHash + " " + piece.getIndex());
+				state.enqueueWrite("PIECEEXISTS " + infoHash + " " + piece.get().getIndex());
 			}
 		}
 	}
