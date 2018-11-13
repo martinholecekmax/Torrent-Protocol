@@ -3,7 +3,9 @@ package main;
 import static utils.Constants.TORRENT_ROOT_LOCATION;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -18,7 +20,7 @@ public class ATorrent {
 		LOGGER.info("Program Started ...");
 		ATorrent aTorrent = new ATorrent();
 		boolean create = true;
-//		create = false;
+		create = false;
 		aTorrent.start(create);
 	}
 
@@ -42,8 +44,8 @@ public class ATorrent {
 
 			// Start Server
 			ServerSocket serverSocket = new ServerSocket(0);
-
-			Peer peer = new Peer(serverSocket.getInetAddress().toString(), serverSocket.getLocalPort());
+			InetAddress localIP = InetAddress.getLocalHost();		
+			Peer peer = new Peer(Optional.empty() ,serverSocket.getInetAddress().toString(),localIP.getHostAddress(), serverSocket.getLocalPort());
 
 			// Initialize FileManager
 			FileManager fileManager = new FileManager(peer);

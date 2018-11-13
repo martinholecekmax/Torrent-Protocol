@@ -1,11 +1,14 @@
 package test;
 
+import java.util.Optional;
+
 import file.FileManager;
 import main.Peer;
 
 class JobHandlerTest {
 	void test() {
-		Peer peer = new Peer("", 2);
+		Optional<String> optional = Optional.of("");
+		Peer peer = new Peer(optional,"","", 2);
 		FileManager jobHandler = new FileManager(peer);
 		boolean saved = false;
 		saved = jobHandler.saveJobs();

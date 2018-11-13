@@ -10,6 +10,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
@@ -70,13 +71,15 @@ public class TrackerClient {
 		int interval = jsonObject.getInt("interval");
 		JSONArray peers = jsonObject.getJSONArray("peers");
 		String peerID = "";
-		String peerIPAddress = "";
-		int peerPort = 0;
+		String ipAddress = "";
+		String localIP = "";
+		int port = 0;
 		for (int i = 0; i < peers.length(); i++) {
 			peerID = peers.getJSONObject(i).getString("peer_id");
-			peerIPAddress = peers.getJSONObject(i).getString("ip");
-			peerPort = peers.getJSONObject(i).getInt("port");
-			Peer peer = new Peer(peerID, peerIPAddress, peerPort);
+			ipAddress = peers.getJSONObject(i).getString("ip");
+			localIP = peers.getJSONObject(i).getString("local_ip");
+			port = peers.getJSONObject(i).getInt("port");
+			Peer peer = new Peer(Optional.of(peerID), ipAddress, localIP, port);
 			peersList.add(peer);
 		}
 		return new TrackerResponse(peersList, interval);

@@ -15,6 +15,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -84,16 +85,17 @@ public class TrackerClientSSL {
 		int interval = jsonObject.getInt("interval");
 		JSONArray peers = jsonObject.getJSONArray("peers");
 		String peerID = "";
-		String peerIPAddress = "";
-		int peerPort = 0;
+		String ipAddress = "";
+		String localIP = "";
+		int port = 0;
 		for (int i = 0; i < peers.length(); i++) {
-			peerID = peers.getJSONObject(i).getString("peer_id");
-			peerIPAddress = peers.getJSONObject(i).getString("ip");
-			peerPort = peers.getJSONObject(i).getInt("port");
-			Peer peer = new Peer(peerID, peerIPAddress, peerPort);
+			peerID = peers.getJSONObject(i).getString("peer_id");			
+			ipAddress = peers.getJSONObject(i).getString("ip");
+			localIP = peers.getJSONObject(i).getString("local_ip");
+			port = peers.getJSONObject(i).getInt("port");
+			Peer peer = new Peer(Optional.of(peerID), ipAddress, localIP, port);
 			peersList.add(peer);
 		}
-		System.out.println(peersList);
 		return new TrackerResponse(peersList, interval);
 	}
 
@@ -108,6 +110,7 @@ public class TrackerClientSSL {
 	private Map<String, Object> createParams(TorrentMetadata torrentMetadata, Peer peer, TorrentStatus status) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("peer_id", peer.getPeerID());
+		params.put("local_ip", peer.getLocalIP());
 		params.put("info_hash", torrentMetadata.getInfoHash());
 		params.put("event", status.getEvent());
 		params.put("port", peer.getPort());

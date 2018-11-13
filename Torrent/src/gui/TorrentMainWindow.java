@@ -6,8 +6,10 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -89,8 +91,8 @@ public class TorrentMainWindow extends JFrame implements ActionListener{
 
 		// Start Server
 		ServerSocket serverSocket = new ServerSocket(0);
-		
-		Peer peer = new Peer(serverSocket.getInetAddress().toString(), serverSocket.getLocalPort());
+		InetAddress localIP = InetAddress.getLocalHost();
+		Peer peer = new Peer(Optional.empty(), serverSocket.getInetAddress().toString(), localIP.getHostAddress(),serverSocket.getLocalPort());
 		
 		// Initialize FileManager
 		fileManager = new FileManager(peer);

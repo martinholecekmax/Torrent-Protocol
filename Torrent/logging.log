@@ -1,0 +1,216 @@
+2018-11-13 10:38:04 INFO  ATorrent:20 - Program Started ...
+2018-11-13 10:38:05 INFO  ATorrent:35 - Server Created ...
+2018-11-13 10:38:05 INFO  ATorrent:36 - IP: 0.0.0.0/0.0.0.0
+2018-11-13 10:38:05 INFO  ATorrent:37 - Port: 57284
+2018-11-13 10:38:06 ERROR ATorrent:222 - java.io.IOException: Server returned HTTP response code: 500 for URL: https://commerce3.derby.ac.uk/~st100344605/api/announce?port=57284&left=20971524&uploaded=0&info_hash=020BA879FA921ECCFEFF0C7CC7986ECD&event=started&downloaded=0&peer_id=45c977f4-1a1b-48b8-8896-a4f0159dc87d
+2018-11-13 10:38:06 INFO  ATorrent:81 - CREATE TORRENT METADATA Pieces: 81 020BA879FA921ECCFEFF0C7CC7986ECD
+2018-11-13 10:39:12 INFO  ATorrent:20 - Program Started ...
+2018-11-13 10:39:12 INFO  ATorrent:35 - Server Created ...
+2018-11-13 10:39:12 INFO  ATorrent:36 - IP: 0.0.0.0/0.0.0.0
+2018-11-13 10:39:12 INFO  ATorrent:37 - Port: 57286
+2018-11-13 10:40:50 INFO  ATorrent:20 - Program Started ...
+2018-11-13 10:41:07 INFO  ATorrent:20 - Program Started ...
+2018-11-13 10:41:54 INFO  ATorrent:20 - Program Started ...
+2018-11-13 10:41:54 INFO  ATorrent:35 - Server Created ...
+2018-11-13 10:41:54 INFO  ATorrent:36 - IP: 0.0.0.0/0.0.0.0
+2018-11-13 10:41:54 INFO  ATorrent:37 - Port: 57299
+2018-11-13 10:43:12 INFO  ATorrent:20 - Program Started ...
+2018-11-13 10:43:12 INFO  ATorrent:35 - Server Created ...
+2018-11-13 10:43:12 INFO  ATorrent:36 - IP: 0.0.0.0/0.0.0.0
+2018-11-13 10:43:12 INFO  ATorrent:37 - Port: 57305
+2018-11-13 10:43:24 INFO  ATorrent:20 - Program Started ...
+2018-11-13 10:43:25 INFO  ATorrent:35 - Server Created ...
+2018-11-13 10:43:25 INFO  ATorrent:36 - IP: 0.0.0.0/0.0.0.0
+2018-11-13 10:43:25 INFO  ATorrent:37 - Port: 57306
+2018-11-13 10:43:26 INFO  ATorrent:81 - CREATE TORRENT METADATA Pieces: 81 020BA879FA921ECCFEFF0C7CC7986ECD
+2018-11-13 10:43:46 INFO  ATorrent:20 - Program Started ...
+2018-11-13 10:43:46 INFO  ATorrent:35 - Server Created ...
+2018-11-13 10:43:46 INFO  ATorrent:36 - IP: 0.0.0.0/0.0.0.0
+2018-11-13 10:43:46 INFO  ATorrent:37 - Port: 57312
+2018-11-13 10:43:46 INFO  ATorrent:105 - LOAD TORRENT METADATA Pieces: 81 020BA879FA921ECCFEFF0C7CC7986ECD
+2018-11-13 10:44:08 DEBUG ATorrent:103 - Couldn't create client socket.
+2018-11-13 10:44:10 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:12 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:14 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:14 INFO  ATorrent:91 - Piece: 0 stored successfully!
+2018-11-13 10:44:16 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:16 INFO  ATorrent:91 - Piece: 1 stored successfully!
+2018-11-13 10:44:16 INFO  ATorrent:91 - Piece: 2 stored successfully!
+2018-11-13 10:44:18 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:18 INFO  ATorrent:91 - Piece: 3 stored successfully!
+2018-11-13 10:44:18 INFO  ATorrent:91 - Piece: 4 stored successfully!
+2018-11-13 10:44:18 INFO  ATorrent:91 - Piece: 5 stored successfully!
+2018-11-13 10:44:20 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:20 INFO  ATorrent:91 - Piece: 6 stored successfully!
+2018-11-13 10:44:20 INFO  ATorrent:91 - Piece: 7 stored successfully!
+2018-11-13 10:44:20 INFO  ATorrent:91 - Piece: 8 stored successfully!
+2018-11-13 10:44:20 INFO  ATorrent:91 - Piece: 9 stored successfully!
+2018-11-13 10:44:22 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:22 INFO  ATorrent:91 - Piece: 10 stored successfully!
+2018-11-13 10:44:22 INFO  ATorrent:91 - Piece: 11 stored successfully!
+2018-11-13 10:44:22 INFO  ATorrent:91 - Piece: 12 stored successfully!
+2018-11-13 10:44:22 INFO  ATorrent:91 - Piece: 13 stored successfully!
+2018-11-13 10:44:22 INFO  ATorrent:91 - Piece: 14 stored successfully!
+2018-11-13 10:44:24 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:24 INFO  ATorrent:91 - Piece: 15 stored successfully!
+2018-11-13 10:44:24 INFO  ATorrent:91 - Piece: 16 stored successfully!
+2018-11-13 10:44:24 INFO  ATorrent:91 - Piece: 17 stored successfully!
+2018-11-13 10:44:24 INFO  ATorrent:91 - Piece: 18 stored successfully!
+2018-11-13 10:44:24 INFO  ATorrent:91 - Piece: 19 stored successfully!
+2018-11-13 10:44:24 INFO  ATorrent:91 - Piece: 20 stored successfully!
+2018-11-13 10:44:26 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:26 INFO  ATorrent:91 - Piece: 21 stored successfully!
+2018-11-13 10:44:26 INFO  ATorrent:91 - Piece: 22 stored successfully!
+2018-11-13 10:44:26 INFO  ATorrent:91 - Piece: 23 stored successfully!
+2018-11-13 10:44:26 INFO  ATorrent:91 - Piece: 24 stored successfully!
+2018-11-13 10:44:26 INFO  ATorrent:91 - Piece: 25 stored successfully!
+2018-11-13 10:44:26 INFO  ATorrent:91 - Piece: 26 stored successfully!
+2018-11-13 10:44:26 INFO  ATorrent:91 - Piece: 27 stored successfully!
+2018-11-13 10:44:28 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:28 INFO  ATorrent:91 - Piece: 28 stored successfully!
+2018-11-13 10:44:28 INFO  ATorrent:91 - Piece: 29 stored successfully!
+2018-11-13 10:44:28 INFO  ATorrent:91 - Piece: 30 stored successfully!
+2018-11-13 10:44:28 INFO  ATorrent:91 - Piece: 31 stored successfully!
+2018-11-13 10:44:28 INFO  ATorrent:91 - Piece: 32 stored successfully!
+2018-11-13 10:44:28 INFO  ATorrent:91 - Piece: 33 stored successfully!
+2018-11-13 10:44:28 INFO  ATorrent:91 - Piece: 34 stored successfully!
+2018-11-13 10:44:28 INFO  ATorrent:91 - Piece: 35 stored successfully!
+2018-11-13 10:44:30 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:30 INFO  ATorrent:91 - Piece: 36 stored successfully!
+2018-11-13 10:44:30 INFO  ATorrent:91 - Piece: 37 stored successfully!
+2018-11-13 10:44:30 INFO  ATorrent:91 - Piece: 38 stored successfully!
+2018-11-13 10:44:30 INFO  ATorrent:91 - Piece: 39 stored successfully!
+2018-11-13 10:44:30 INFO  ATorrent:91 - Piece: 40 stored successfully!
+2018-11-13 10:44:30 INFO  ATorrent:91 - Piece: 41 stored successfully!
+2018-11-13 10:44:30 INFO  ATorrent:91 - Piece: 42 stored successfully!
+2018-11-13 10:44:30 INFO  ATorrent:91 - Piece: 43 stored successfully!
+2018-11-13 10:44:31 INFO  ATorrent:91 - Piece: 44 stored successfully!
+2018-11-13 10:44:32 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:32 INFO  ATorrent:91 - Piece: 45 stored successfully!
+2018-11-13 10:44:32 INFO  ATorrent:91 - Piece: 46 stored successfully!
+2018-11-13 10:44:32 INFO  ATorrent:91 - Piece: 47 stored successfully!
+2018-11-13 10:44:32 INFO  ATorrent:91 - Piece: 48 stored successfully!
+2018-11-13 10:44:32 INFO  ATorrent:91 - Piece: 49 stored successfully!
+2018-11-13 10:44:32 INFO  ATorrent:91 - Piece: 50 stored successfully!
+2018-11-13 10:44:32 INFO  ATorrent:91 - Piece: 51 stored successfully!
+2018-11-13 10:44:32 INFO  ATorrent:91 - Piece: 52 stored successfully!
+2018-11-13 10:44:32 INFO  ATorrent:91 - Piece: 53 stored successfully!
+2018-11-13 10:44:33 INFO  ATorrent:91 - Piece: 54 stored successfully!
+2018-11-13 10:44:34 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:34 INFO  ATorrent:91 - Piece: 55 stored successfully!
+2018-11-13 10:44:34 INFO  ATorrent:91 - Piece: 56 stored successfully!
+2018-11-13 10:44:34 INFO  ATorrent:91 - Piece: 57 stored successfully!
+2018-11-13 10:44:34 INFO  ATorrent:91 - Piece: 58 stored successfully!
+2018-11-13 10:44:34 INFO  ATorrent:91 - Piece: 59 stored successfully!
+2018-11-13 10:44:34 INFO  ATorrent:91 - Piece: 60 stored successfully!
+2018-11-13 10:44:34 INFO  ATorrent:91 - Piece: 61 stored successfully!
+2018-11-13 10:44:34 INFO  ATorrent:91 - Piece: 62 stored successfully!
+2018-11-13 10:44:34 INFO  ATorrent:91 - Piece: 63 stored successfully!
+2018-11-13 10:44:34 INFO  ATorrent:91 - Piece: 64 stored successfully!
+2018-11-13 10:44:35 INFO  ATorrent:91 - Piece: 65 stored successfully!
+2018-11-13 10:44:36 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:36 INFO  ATorrent:91 - Piece: 66 stored successfully!
+2018-11-13 10:44:36 INFO  ATorrent:91 - Piece: 67 stored successfully!
+2018-11-13 10:44:36 INFO  ATorrent:91 - Piece: 68 stored successfully!
+2018-11-13 10:44:36 INFO  ATorrent:91 - Piece: 69 stored successfully!
+2018-11-13 10:44:36 INFO  ATorrent:91 - Piece: 70 stored successfully!
+2018-11-13 10:44:36 INFO  ATorrent:91 - Piece: 71 stored successfully!
+2018-11-13 10:44:36 INFO  ATorrent:91 - Piece: 72 stored successfully!
+2018-11-13 10:44:36 INFO  ATorrent:91 - Piece: 73 stored successfully!
+2018-11-13 10:44:36 INFO  ATorrent:91 - Piece: 74 stored successfully!
+2018-11-13 10:44:36 INFO  ATorrent:91 - Piece: 75 stored successfully!
+2018-11-13 10:44:36 INFO  ATorrent:91 - Piece: 76 stored successfully!
+2018-11-13 10:44:37 INFO  ATorrent:91 - Piece: 77 stored successfully!
+2018-11-13 10:44:38 INFO  ATorrent:98 - Peer Connected: 7e08c841-89c7-4f47-99b7-6d445625dcea10.254.245.244:57306
+2018-11-13 10:44:38 INFO  ATorrent:91 - Piece: 78 stored successfully!
+2018-11-13 10:44:38 INFO  ATorrent:91 - Piece: 79 stored successfully!
+2018-11-13 10:44:38 INFO  ATorrent:91 - Piece: 80 stored successfully!
+2018-11-13 10:44:38 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:38 INFO  ATorrent:91 - Piece: 57 stored successfully!
+2018-11-13 10:44:38 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:38 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:91 - Piece: 58 stored successfully!
+2018-11-13 10:44:38 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:38 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:91 - Piece: 59 stored successfully!
+2018-11-13 10:44:38 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:38 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:91 - Piece: 60 stored successfully!
+2018-11-13 10:44:38 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:38 INFO  ATorrent:91 - Piece: 61 stored successfully!
+2018-11-13 10:44:38 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:38 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:91 - Piece: 62 stored successfully!
+2018-11-13 10:44:38 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:38 INFO  ATorrent:91 - Piece: 63 stored successfully!
+2018-11-13 10:44:38 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:38 INFO  ATorrent:91 - Piece: 64 stored successfully!
+2018-11-13 10:44:38 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:38 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:91 - Piece: 65 stored successfully!
+2018-11-13 10:44:38 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:38 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:38 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:39 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:39 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:39 INFO  ATorrent:91 - Piece: 66 stored successfully!
+2018-11-13 10:44:39 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:39 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:39 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:39 INFO  ATorrent:57 - Job Finished empty_20MB
+2018-11-13 10:44:40 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:40 INFO  ATorrent:91 - Piece: 67 stored successfully!
+2018-11-13 10:44:40 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:40 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:40 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:40 INFO  ATorrent:91 - Piece: 68 stored successfully!
+2018-11-13 10:44:40 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:40 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:40 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:40 INFO  ATorrent:91 - Piece: 69 stored successfully!
+2018-11-13 10:44:40 INFO  ATorrent:117 - Client sends disconnect
+2018-11-13 10:44:40 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:40 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:40 INFO  ATorrent:35 - Reader Terminated Gracefully!
+2018-11-13 10:44:40 INFO  ATorrent:38 - Writer Terminated Gracefully!
+2018-11-13 10:44:40 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:40 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:40 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:40 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:40 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:40 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:40 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:40 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:40 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:40 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:40 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:40 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:40 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:40 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:40 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:40 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:40 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:40 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:41 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:41 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:41 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:41 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:42 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:42 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:42 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:42 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:42 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:42 INFO  ATorrent:67 - Download Task Process Terminated ...
+2018-11-13 10:44:42 INFO  ATorrent:58 - Client, Reader and Writer Threads are finishing before closing.
+2018-11-13 10:44:42 INFO  ATorrent:67 - Download Task Process Terminated ...

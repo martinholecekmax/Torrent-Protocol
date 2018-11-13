@@ -16,7 +16,7 @@ import file.FileManager;
 import tracker.TrackerClientSSL;
 import tracker.TrackerResponse;
 
-public class DownloadManager implements Runnable{
+public class DownloadManager implements Runnable {
 
 	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 	private ArrayList<Peer> peers;
@@ -27,24 +27,25 @@ public class DownloadManager implements Runnable{
 	private int interval;
 	@SuppressWarnings("unused")
 	private ExecutorService executorService;
-	
+
 	public DownloadManager(Job job, FileManager fileManager) {
 		this.job = job;
 		this.client = fileManager.getPeer();
 		this.fileManager = fileManager;
 		this.interval = DEFAULT_INTERVAL;
 		this.connectedPeers = new ArrayList<>();
-		executorService = Executors.newFixedThreadPool(MAX_CLIENT_THREADS);		
+		executorService = Executors.newFixedThreadPool(MAX_CLIENT_THREADS);
 	}
-	
+
 	@Override
 	public void run() {
-		while(!job.isDone()) {
+		while (!job.isDone()) {
 			try {
-				TrackerResponse response = TrackerClientSSL.getResponse(job.getTorrentMetadata(), client, job.getStatus());
+				TrackerResponse response = TrackerClientSSL.getResponse(job.getTorrentMetadata(), client,
+						job.getStatus());
 				if (response != null) {
 					peers = response.getPeers();
-					interval = response.getInterval();					
+					interval = response.getInterval();
 					createDownloadTasks(peers);
 				}
 				Thread.sleep(interval);
@@ -53,9 +54,9 @@ public class DownloadManager implements Runnable{
 			}
 		}
 		fileManager.contactTracker();
-		LOGGER.info("Job Finished "+ job.getTorrentMetadata().getInfo().getName());
-	}	
-	
+		LOGGER.info("Job Finished " + job.getTorrentMetadata().getInfo().getName());
+	}
+
 	/**
 	 * For each Peer create Download Task.
 	 * 
@@ -63,36 +64,37 @@ public class DownloadManager implements Runnable{
 	 */
 	public void createDownloadTasks(ArrayList<Peer> peers) {
 		for (Peer peer : peers) {
-			try {				
+			try {
 				// Don't connect to same program, get public ip address
 				if (peer.getPeerID().equals(client.getPeerID())) {
 					client.setIpAddress(peer.getIpAddress());
 					continue;
 				}
-				
+
 				// Don't create new task if peer is already connected
 				if (connectedPeers.contains(peer)) {
 					continue;
 				}
-				
-				if(job.isDone()){
+
+				if (job.isDone()) {
 					break;
 				}
+
 				// Check if is localhost
 				Socket socket = null;
 				if (peer.getIpAddress().equals(client.getIpAddress())) {
-					socket = new Socket("localhost", peer.getPort());					
+					socket = new Socket(peer.getLocalIP(), peer.getPort());
 				} else {
 					socket = new Socket(peer.getIpAddress(), peer.getPort());
 				}
-				
+
 				DownloadTask task = new DownloadTask(socket, fileManager, connectedPeers, peer, job);
 
 				// executorService.submit(task);
-				
+
 				Thread thread = new Thread(task, "Download task thread");
 				thread.start();
-				
+
 				LOGGER.info("Peer Connected: " + peer.getPeerID() + peer.getIpAddress() + ":" + peer.getPort());
 			} catch (UnknownHostException e) {
 				LOGGER.debug("Couldn't connect to a peer.");

@@ -1,0 +1,1 @@
+2018-11-13 10:38:06 ERROR ATorrent:222 - java.io.IOException: Server returned HTTP response code: 500 for URL: https://commerce3.derby.ac.uk/~st100344605/api/announce?port=57284&left=20971524&uploaded=0&info_hash=020BA879FA921ECCFEFF0C7CC7986ECD&event=started&downloaded=0&peer_id=45c977f4-1a1b-48b8-8896-a4f0159dc87d
