@@ -15,8 +15,8 @@ public class Constants {
 	public static final int DEFAULT_INTERVAL = 5000;
 //	public static final int DEFAULT_INTERVAL = 1800;
 	/** Default bandwidth value => 256kB/2s (PIECE_SIZE/2000ms) or 2 Megabits/sec */
-//	public static final int DEFAULT_BANDWIDTH = 10;
-	public static final int DEFAULT_BANDWIDTH = 2000;
+	public static final int DEFAULT_BANDWIDTH = 10;
+//	public static final int DEFAULT_BANDWIDTH = 2000;
 	/** Contact tracker for all finished jobs after 5 minutes. */
 	public static final int CONTACT_TRACKER_TIMER = 300000;
 	/** Maximum number of threads that will be submitted by server */

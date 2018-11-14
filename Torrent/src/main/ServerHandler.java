@@ -98,8 +98,9 @@ public class ServerHandler implements Runnable {
 			} else {
 				LOGGER.warn("SYNTAX ERROR " + message);
 			}
-		} else {
-			state.enqueueWrite("KEEPALIVE");
-		}
+		} 
+//		else {
+//			state.enqueueWrite("KEEPALIVE");
+//		}
 	}
 }

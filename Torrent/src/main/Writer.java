@@ -29,7 +29,7 @@ public class Writer implements Runnable {
 					}
 				}
 				try {
-					Thread.sleep(1);
+					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					LOGGER.error("Thread sleep has been interrupted.", e);
 				}

@@ -88,15 +88,16 @@ public class DownloadManager implements Runnable {
 				} else {
 					socket = new Socket(peer.getIpAddress(), peer.getPort());
 				}
-
-				DownloadTask task = new DownloadTask(socket, fileManager, connectedPeers, peer, job);
-				executorService.submit(task);
+				if (socket.isConnected()) {
+					DownloadTask task = new DownloadTask(socket, fileManager, connectedPeers, peer, job);
+					executorService.submit(task);
+				}
 
 			} catch (UnknownHostException e) {
-				LOGGER.debug("Couldn't connect to a peer.");
+				LOGGER.debug("Couldn't connect to a peer. Port: " + peer.getPort() + "IP: " + peer.getIpAddress());
 				continue;
 			} catch (IOException e) {
-				LOGGER.debug("Couldn't create client socket.");
+				LOGGER.debug("Couldn't create client socket. Port: " + peer.getPort() + "IP: " + peer.getIpAddress());
 				continue;
 			}
 		}

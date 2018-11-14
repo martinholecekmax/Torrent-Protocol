@@ -119,7 +119,6 @@ public class FileManager {
 	 *         piece where data are empty.
 	 */
 	public Optional<Piece> getPiece(String infoHash, int index) {
-		synchronized (pieceLock) {
 			for (Job job : jobs) {
 				if (job.getTorrentInfoHash().equals(infoHash)) {
 					Optional<Piece> piece = job.getPiece(index);
@@ -130,7 +129,6 @@ public class FileManager {
 				}
 			}
 			return Optional.empty();
-		}
 	}
 
 	/**
