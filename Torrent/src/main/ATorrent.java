@@ -22,23 +22,15 @@ public class ATorrent {
 		LOGGER.info("Program Started ...");
 		ATorrent aTorrent = new ATorrent();
 		boolean create = true;
-		create = false;
+//		create = false;
 		aTorrent.start(create);
 	}
 
 	public void start(boolean start) {
 		try {
-//			String filename = TORRENT_ROOT_LOCATION + "torrent test\\test.txt";
-//			String torrentFileName = TORRENT_ROOT_LOCATION + "test.temp";
-			 
-//			String filename = TORRENT_ROOT_LOCATION + "Alpha";
-//			String torrentFileName = TORRENT_ROOT_LOCATION + "Alpha.temp";	
-
 			String filename = System.getProperty("user.dir") + "/empty_20MB.txt";			
 			String torrentFileName =  System.getProperty("user.dir") + "/empty_20MB.temp";
 			String location = System.getProperty("user.dir") + "\\";
-			
-//			String location = TORRENT_ROOT_LOCATION;
 			String storeLocation = TORRENT_ROOT_LOCATION + "test\\";
 
 			// Load previous jobs from dat file

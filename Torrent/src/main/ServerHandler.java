@@ -24,7 +24,7 @@ public class ServerHandler implements Runnable {
 
 	public ServerHandler(Socket socket, ArrayList<Socket> connections, FileManager fileManager) {
 		LOGGER.info("Server -> Peer Connected: " + socket.getRemoteSocketAddress());		
-		state = new ConnectionState(socket);
+		state = new ConnectionState(socket);		
 		reader = new Reader(state);
 		writer = new Writer(state);
 		this.connections = connections;
@@ -35,10 +35,10 @@ public class ServerHandler implements Runnable {
 	public void run() {
 		Thread readerThread = new Thread(reader, "Server Reader Thread");
 		Thread writerThread = new Thread(writer, "Server Writer Thread");
-
+		Thread.currentThread().setName("Server");
 		readerThread.start();
 		writerThread.start();
-
+		
 		while (state.isAlive()) {
 			try {
 				processCommands();
@@ -91,18 +91,15 @@ public class ServerHandler implements Runnable {
 					state.enqueueWrite("NOPIECE " + infoHash + " " + index);
 					LOGGER.trace("Piece not present.");
 				}
-			} else if (message.startsWith("KEEPALIVE")) {
-				LOGGER.trace("KEEPALIVE from client");
 			} else if (message.startsWith("DISCONNECT")) {
 				LOGGER.info("Server disconnects ...");
-//				state.enqueueWrite("DISCONNECTED");
 				Thread.sleep(100);
-				state.clearReadQueue();
-				state.clearWriteQueue();
 				state.setKill(true);
 			} else {
 				LOGGER.warn("SYNTAX ERROR " + message);
 			}
+		} else {
+			state.enqueueWrite("KEEPALIVE");
 		}
 	}
 }

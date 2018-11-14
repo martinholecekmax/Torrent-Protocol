@@ -26,7 +26,6 @@ public class DownloadManager implements Runnable {
 	private Peer client;
 	private FileManager fileManager;
 	private int interval;
-	@SuppressWarnings("unused")
 	private ExecutorService executorService;
 
 	public DownloadManager(Job job, FileManager fileManager) {
@@ -55,6 +54,7 @@ public class DownloadManager implements Runnable {
 			}
 		}
 		fileManager.contactTracker();
+		executorService.shutdown();
 		LOGGER.info("Job Finished " + job.getTorrentMetadata().getInfo().getName());
 	}
 
@@ -69,7 +69,7 @@ public class DownloadManager implements Runnable {
 				if (job.isDone()) {
 					break;
 				}
-				
+
 				// Don't connect to same program, get public ip address
 				if (peer.getPeerID().equals(client.getPeerID())) {
 					client.setIpAddress(peer.getIpAddress());
@@ -90,12 +90,8 @@ public class DownloadManager implements Runnable {
 				}
 
 				DownloadTask task = new DownloadTask(socket, fileManager, connectedPeers, peer, job);
+				executorService.submit(task);
 
-				// executorService.submit(task);
-
-				Thread thread = new Thread(task, "Download task thread");
-				thread.start();
-				
 			} catch (UnknownHostException e) {
 				LOGGER.debug("Couldn't connect to a peer.");
 				continue;

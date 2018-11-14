@@ -23,6 +23,7 @@ public class Job implements Serializable {
 
 	transient private Object queueLock;
 	transient private Object pieceListLock;
+	transient private Object doneLock;
 	private PiecesQueue piecesQueue;
 
 	public Job(ArrayList<Piece> pieces, ArrayList<File> files, TorrentMetadata torrentMetadata) {
@@ -30,6 +31,7 @@ public class Job implements Serializable {
 		this.files = files;
 		this.queueLock = new Object();
 		this.pieceListLock = new Object();
+		this.doneLock = new Object();
 		this.torrentMetadata = torrentMetadata;
 		this.status = new TorrentStatus();
 		this.status.setLeft(torrentMetadata.getInfo().getLength());
@@ -92,11 +94,15 @@ public class Job implements Serializable {
 	}
 
 	public boolean isDone() {
-		return done;
+		synchronized (doneLock) {
+			return done;
+		}
 	}
 
 	public void setDone(boolean done) {
-		this.done = done;
+		synchronized (doneLock) {
+			this.done = done;
+		}
 	}
 
 	/**

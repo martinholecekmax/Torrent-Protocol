@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
@@ -31,27 +33,22 @@ public class Server implements Runnable {
 		try {
 			Thread jobUpdaterThread = new Thread(jobUpdater, "Job Updater Thread");
 			jobUpdaterThread.start();
-
+			
 			LOGGER.info("Server Created ...");
 			LOGGER.info("IP: " + serverSocket.getInetAddress().toString());
 			LOGGER.info("Port: " + serverSocket.getLocalPort());
-
-//			ExecutorService executorService = Executors.newFixedThreadPool(MAX_SERVER_THREADS);
+			
+			ExecutorService executorService = Executors.newFixedThreadPool(MAX_SERVER_THREADS);
 
 			while (running) {
-				Socket socket = serverSocket.accept();
-				socket.setSoTimeout(SOCKET_TIMEOUT);
-
-//				ServerHandler connection = new ServerHandler(socket, connections, fileManager);
-//				executorService.submit(connection);
-
-				ServerHandler connection = new ServerHandler(socket, connections, fileManager);
-				Thread connectionThread = new Thread(connection, "Connection Manager - New Connection Thread");
-				connectionThread.start();
+				Socket socket = serverSocket.accept();				
 
 				connections.add(socket);
+				ServerHandler connection = new ServerHandler(socket, connections, fileManager);
+				executorService.submit(connection);
 			}
 			serverSocket.close();
+			executorService.shutdown();
 		} catch (IOException e) {
 			LOGGER.error("Server Socket failed.", e);
 		}

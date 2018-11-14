@@ -39,7 +39,7 @@ public class DownloadTask implements Runnable {
 	public void run() {
 		connectedPeers.add(peer);
 		LOGGER.info("Client -> Peer Connected: " + peer.getIpAddress() + ":" + peer.getPort() + " " + peer.getPeerID());
-		
+		Thread.currentThread().setName("Client");
 		Thread readerThread = new Thread(reader, "Client Reader Thread");
 		Thread writerThread = new Thread(writer, "Client Writer Thread");
 		readerThread.start();
@@ -103,12 +103,14 @@ public class DownloadTask implements Runnable {
 				CSVFileHandler.writeTime("Reieved", index);
 			} else if (message.startsWith("NOPIECE")) {				
 				LOGGER.trace("This peer doesn't have a piece: " + message);
+			} else if (message.startsWith("KEEPALIVE")) {
+				LOGGER.info("KEEPALIVE from client");
 			} else {
 				LOGGER.warn("SYNTAX ERROR " + message);
 			}
 		}
 	}
-
+	
 	/**
 	 * Ask Peer for Piece.
 	 * @throws InterruptedException 
@@ -118,8 +120,6 @@ public class DownloadTask implements Runnable {
 			LOGGER.info("Client sends disconnect");
 			state.enqueueWrite("DISCONNECT");
 			Thread.sleep(100);
-//			state.clearReadQueue();
-//			state.clearWriteQueue();
 			state.setKill(true);	
 		} else if(!job.isDone()){
 			Optional<Piece> piece = job.findLessSeenPiece();
