@@ -1,1 +1,8 @@
 /bin/
+empty_20MB.temp
+empty_20MB.txt
+errors.log
+logging.log
+resume.dat
+statistics.csv
+warnings.log

@@ -58,7 +58,7 @@ public class ATorrent {
 					serverSocket.getLocalPort());
 
 			// Initialize FileManager
-			FileManager fileManager = new FileManager(peer);
+			fileManager = new FileManager(peer);
 
 			Server listener = new Server(serverSocket, fileManager);
 			Thread thread = new Thread(listener, "Listener thread.");
