@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import file.FileManager;
-import static utils.Constants.*;
+//import static utils.Constants.*;
 
 public class Server implements Runnable {
 
@@ -36,14 +36,9 @@ public class Server implements Runnable {
 			LOGGER.info("IP: " + serverSocket.getInetAddress().toString());
 			LOGGER.info("Port: " + serverSocket.getLocalPort());
 
-//			ExecutorService executorService = Executors.newFixedThreadPool(MAX_SERVER_THREADS);
-
 			while (running) {
 				Socket socket = serverSocket.accept();
-				socket.setSoTimeout(SOCKET_TIMEOUT);
-
-//				ServerHandler connection = new ServerHandler(socket, connections, fileManager);
-//				executorService.submit(connection);
+//				socket.setSoTimeout(SOCKET_TIMEOUT);
 
 				ServerHandler connection = new ServerHandler(socket, connections, fileManager);
 				Thread connectionThread = new Thread(connection, "Connection Manager - New Connection Thread");

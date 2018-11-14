@@ -1,15 +1,12 @@
 package main;
 
 import static utils.Constants.DEFAULT_INTERVAL;
-import static utils.Constants.MAX_CLIENT_THREADS;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
@@ -26,8 +23,6 @@ public class DownloadManager implements Runnable {
 	private Peer client;
 	private FileManager fileManager;
 	private int interval;
-	@SuppressWarnings("unused")
-	private ExecutorService executorService;
 
 	public DownloadManager(Job job, FileManager fileManager) {
 		this.job = job;
@@ -35,7 +30,6 @@ public class DownloadManager implements Runnable {
 		this.fileManager = fileManager;
 		this.interval = DEFAULT_INTERVAL;
 		this.connectedPeers = new ArrayList<>();
-		executorService = Executors.newFixedThreadPool(MAX_CLIENT_THREADS);
 	}
 
 	@Override
@@ -90,9 +84,6 @@ public class DownloadManager implements Runnable {
 				}
 
 				DownloadTask task = new DownloadTask(socket, fileManager, connectedPeers, peer, job);
-
-				// executorService.submit(task);
-
 				Thread thread = new Thread(task, "Download task thread");
 				thread.start();
 				

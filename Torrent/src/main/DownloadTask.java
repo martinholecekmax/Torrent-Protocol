@@ -113,8 +113,9 @@ public class DownloadTask implements Runnable {
 	 * Ask Peer for Piece.
 	 * @throws InterruptedException 
 	 */
-	public void processWrite() throws InterruptedException {		
-		if (job.isJobDone() && state.isAlive()) {
+	public void processWrite() throws InterruptedException {	
+		job.isJobDone();
+		if (job.isDone() && state.isAlive()) {
 			LOGGER.info("Client sends disconnect");
 			state.enqueueWrite("DISCONNECT");
 			Thread.sleep(100);

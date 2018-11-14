@@ -14,64 +14,73 @@ import org.apache.log4j.PropertyConfigurator;
 
 import file.FileManager;
 
+enum Process {
+	LOAD, CREATE
+}
+
 public class ATorrent {
 	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
+	private String filename;
+	private String torrentFileName;
+	private String location;
+	private String storeLocation;
+	private FileManager fileManager;
 
 	public static void main(String[] args) {
 		PropertyConfigurator.configure("properties/log4j.properties");
 		LOGGER.info("Program Started ...");
 		ATorrent aTorrent = new ATorrent();
-		boolean create = true;
-		create = false;
-		aTorrent.start(create);
+		aTorrent.initialize();
+		aTorrent.torrentProcess(Process.LOAD);
+//		aTorrent.torrentProcess(Process.CREATE);
 	}
 
-	public void start(boolean start) {
+	public void initialize() {
 		try {
-//			String filename = TORRENT_ROOT_LOCATION + "torrent test\\test.txt";
-//			String torrentFileName = TORRENT_ROOT_LOCATION + "test.temp";
-			 
-//			String filename = TORRENT_ROOT_LOCATION + "Alpha";
-//			String torrentFileName = TORRENT_ROOT_LOCATION + "Alpha.temp";	
-
-			String filename = System.getProperty("user.dir") + "/empty_20MB.txt";			
-			String torrentFileName =  System.getProperty("user.dir") + "/empty_20MB.temp";
-			String location = System.getProperty("user.dir") + "\\";
-			
-//			String location = TORRENT_ROOT_LOCATION;
-			String storeLocation = TORRENT_ROOT_LOCATION + "test\\";
+			filename = System.getProperty("user.dir") + "/empty_20MB.txt";
+			torrentFileName = System.getProperty("user.dir") + "/empty_20MB.temp";
+			location = System.getProperty("user.dir") + "\\";
+			storeLocation = TORRENT_ROOT_LOCATION + "test\\";
 
 			// Load previous jobs from dat file
 //			fileManager.loadJobs();
 
 			// Start Server
 			ServerSocket serverSocket = new ServerSocket(0);
-			
+
 			String localIP = "";
 			try (final DatagramSocket socket = new DatagramSocket()) {
 				socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
 				localIP = socket.getLocalAddress().getHostAddress();
 			} catch (UnknownHostException e) {
-				localIP = InetAddress.getLocalHost().getHostAddress();				
+				localIP = InetAddress.getLocalHost().getHostAddress();
 			}
-			
-			Peer peer = new Peer(Optional.empty() ,serverSocket.getInetAddress().toString(),localIP, serverSocket.getLocalPort());
 
-			// Initialize FileManager
-			FileManager fileManager = new FileManager(peer);
+			Peer peer = new Peer(Optional.empty(), serverSocket.getInetAddress().toString(), localIP,
+					serverSocket.getLocalPort());
+
+			fileManager = new FileManager(peer);
 
 			Server listener = new Server(serverSocket, fileManager);
 			Thread thread = new Thread(listener, "Listener thread.");
 			thread.start();
 
-			if (start) {
-				createTorrent(fileManager, filename, location);
-			} else {
-				loadTorrent(fileManager, torrentFileName, storeLocation);
-			}
-
 		} catch (IOException e) {
 			LOGGER.fatal("Failed to create server socket", e);
+		}
+	}
+
+	private void torrentProcess(Process start) {
+		switch (start) {
+		case CREATE:
+			createTorrent(fileManager, filename, location);
+			break;
+		case LOAD:
+			loadTorrent(fileManager, torrentFileName, storeLocation);
+			break;
+		default:
+			createTorrent(fileManager, filename, location);
+			break;
 		}
 	}
 
@@ -112,9 +121,10 @@ public class ATorrent {
 			if (job.isPresent()) {
 				DownloadManager downloadManager = new DownloadManager(job.get(), fileManager);
 				Thread downloadManagerThread = new Thread(downloadManager, "Download Manager Thread");
-				downloadManagerThread.start();				
-				LOGGER.info("LOAD TORRENT METADATA Pieces: " + job.get().numPieces() + " " + torrentMetadata.getInfoHash());
-			} else {				
+				downloadManagerThread.start();
+				LOGGER.info(
+						"LOAD TORRENT METADATA Pieces: " + job.get().numPieces() + " " + torrentMetadata.getInfoHash());
+			} else {
 				LOGGER.fatal("Job creation failed.");
 			}
 		} catch (ClassNotFoundException e) {

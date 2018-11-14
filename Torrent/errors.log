@@ -684,3 +684,86 @@ java.net.SocketException: Software caused connection abort: socket write error
 	at main.Writer.writeOut(Writer.java:50)
 	at main.Writer.run(Writer.java:31)
 	at java.lang.Thread.run(Unknown Source)
+2018-11-14 11:53:33 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Software caused connection abort: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.writeInt(Unknown Source)
+	at main.Writer.writeOut(Writer.java:47)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-14 11:53:33 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Software caused connection abort: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.write(Unknown Source)
+	at java.io.FilterOutputStream.write(Unknown Source)
+	at main.Writer.writeOut(Writer.java:49)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-14 11:54:22 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Software caused connection abort: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.writeInt(Unknown Source)
+	at main.Writer.writeOut(Writer.java:47)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-14 11:54:22 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Software caused connection abort: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.writeInt(Unknown Source)
+	at main.Writer.writeOut(Writer.java:47)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-14 11:54:22 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Software caused connection abort: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.writeInt(Unknown Source)
+	at main.Writer.writeOut(Writer.java:47)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-14 11:54:22 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Software caused connection abort: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.writeInt(Unknown Source)
+	at main.Writer.writeOut(Writer.java:47)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-14 11:54:43 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Software caused connection abort: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.writeInt(Unknown Source)
+	at main.Writer.writeOut(Writer.java:47)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-14 11:54:43 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Connection reset by peer: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.write(Unknown Source)
+	at java.io.FilterOutputStream.write(Unknown Source)
+	at main.Writer.writeOut(Writer.java:49)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)
+2018-11-14 11:54:43 ERROR ATorrent:40 - Writer Terminated Error Unexpectedly! 
+java.net.SocketException: Software caused connection abort: socket write error
+	at java.net.SocketOutputStream.socketWrite0(Native Method)
+	at java.net.SocketOutputStream.socketWrite(Unknown Source)
+	at java.net.SocketOutputStream.write(Unknown Source)
+	at java.io.DataOutputStream.writeInt(Unknown Source)
+	at main.Writer.writeOut(Writer.java:47)
+	at main.Writer.run(Writer.java:28)
+	at java.lang.Thread.run(Unknown Source)

@@ -90,9 +90,9 @@ public class Piece implements Comparable<Piece>, Serializable {
 			String hash = Utility.getHahSHA1(piece.getData().get());
 			if (!hash.isEmpty()) {
 				if (hash.equals(this.hash)) {
-					this.valid = true;
+					this.setValid(true);
 				} else {
-					this.valid = false;
+					this.setValid(false);
 				}				
 			}
 		}
