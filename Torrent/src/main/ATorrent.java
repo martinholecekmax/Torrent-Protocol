@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Optional;
 
@@ -30,9 +31,12 @@ public class ATorrent {
 		PropertyConfigurator.configure("properties/log4j.properties");
 		LOGGER.info("Program Started ...");
 		ATorrent aTorrent = new ATorrent();
-		aTorrent.initialize();
 		aTorrent.torrentProcess(Process.LOAD);
 //		aTorrent.torrentProcess(Process.CREATE);
+	}
+
+	public ATorrent() {
+		initialize();
 	}
 
 	public void initialize() {
@@ -48,13 +52,7 @@ public class ATorrent {
 			// Start Server
 			ServerSocket serverSocket = new ServerSocket(0);
 
-			String localIP = "";
-			try (final DatagramSocket socket = new DatagramSocket()) {
-				socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
-				localIP = socket.getLocalAddress().getHostAddress();
-			} catch (UnknownHostException e) {
-				localIP = InetAddress.getLocalHost().getHostAddress();
-			}
+			String localIP = getLocalIP();
 
 			Peer peer = new Peer(Optional.empty(), serverSocket.getInetAddress().toString(), localIP,
 					serverSocket.getLocalPort());
@@ -68,6 +66,17 @@ public class ATorrent {
 		} catch (IOException e) {
 			LOGGER.fatal("Failed to create server socket", e);
 		}
+	}
+
+	private String getLocalIP() throws SocketException, UnknownHostException {
+		String localIP = "";
+		try (final DatagramSocket socket = new DatagramSocket()) {
+			socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+			localIP = socket.getLocalAddress().getHostAddress();
+		} catch (UnknownHostException e) {
+			localIP = InetAddress.getLocalHost().getHostAddress();
+		}
+		return localIP;
 	}
 
 	private void torrentProcess(Process start) {
