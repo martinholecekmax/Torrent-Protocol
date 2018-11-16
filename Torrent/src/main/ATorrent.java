@@ -31,8 +31,8 @@ public class ATorrent {
 		PropertyConfigurator.configure("properties/log4j.properties");
 		LOGGER.info("Program Started ...");
 		ATorrent aTorrent = new ATorrent();
-		aTorrent.torrentProcess(Process.LOAD);
-//		aTorrent.torrentProcess(Process.CREATE);
+//		aTorrent.torrentProcess(Process.LOAD);
+		aTorrent.torrentProcess(Process.CREATE);
 	}
 
 	public ATorrent() {

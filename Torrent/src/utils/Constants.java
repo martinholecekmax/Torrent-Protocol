@@ -23,7 +23,7 @@ public class Constants {
 	public static final int MAX_SERVER_THREADS = 100;
 	/** Maximum number of threads that will be submitted by client */
 	public static final int MAX_CLIENT_THREADS = 100;
-	/** Socket will terminate after inactivity defined by this value (10 minutes) */
-//	public static final int SOCKET_TIMEOUT = 600000;	
-	public static final int SOCKET_TIMEOUT = 6000;	// 1 minute
+	/** Server will send keep alive message to the client, if client is not available then server will terminate */
+	public static final int KEEP_ALIVE_TIMER = 10000;	// 10 Seconds
+	
 }

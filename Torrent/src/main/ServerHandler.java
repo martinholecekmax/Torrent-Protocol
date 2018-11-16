@@ -21,6 +21,7 @@ public class ServerHandler implements Runnable {
 	private ConnectionState state;
 	private ArrayList<Socket> connections;
 	private FileManager fileManager;
+	private long timeStart;
 
 	public ServerHandler(Socket socket, ArrayList<Socket> connections, FileManager fileManager) {
 		LOGGER.info("Server -> Peer Connected: " + socket.getRemoteSocketAddress());		
@@ -33,16 +34,18 @@ public class ServerHandler implements Runnable {
 
 	@Override
 	public void run() {
+		Thread.currentThread().setName("Server");
+		timeStart = System.currentTimeMillis();
 		Thread readerThread = new Thread(reader, "Server Reader Thread");
 		Thread writerThread = new Thread(writer, "Server Writer Thread");
-		Thread.currentThread().setName("Server");
 		readerThread.start();
 		writerThread.start();
-		
+				
 		while (state.isAlive()) {
 			try {
 				processCommands();
 				Thread.sleep(DEFAULT_BANDWIDTH);
+				keepAlive();
 			} catch (InterruptedException e) {
 				LOGGER.error("Thread sleep has been interrupted.", e);
 			}
@@ -60,6 +63,15 @@ public class ServerHandler implements Runnable {
 		}
 		LOGGER.info("Server Process Terminated ...");
 		connections.remove(state.getSocket());
+	}
+	
+	private void keepAlive() {
+		long timeEnd = System.currentTimeMillis();
+		long timeDelta = timeEnd - timeStart;
+		if (timeDelta > KEEP_ALIVE_TIMER) {
+			state.enqueueWrite("KEEPALIVE");
+			timeStart = System.currentTimeMillis();
+		}
 	}
 
 	public void processCommands() throws InterruptedException {
@@ -99,8 +111,5 @@ public class ServerHandler implements Runnable {
 				LOGGER.warn("SYNTAX ERROR " + message);
 			}
 		} 
-//		else {
-//			state.enqueueWrite("KEEPALIVE");
-//		}
 	}
 }

@@ -104,7 +104,7 @@ public class DownloadTask implements Runnable {
 			} else if (message.startsWith("NOPIECE")) {				
 				LOGGER.trace("This peer doesn't have a piece: " + message);
 			} else if (message.startsWith("KEEPALIVE")) {
-				LOGGER.info("KEEPALIVE from client");
+				LOGGER.trace("Server sended KEEPALIVE");
 			} else {
 				LOGGER.warn("SYNTAX ERROR " + message);
 			}

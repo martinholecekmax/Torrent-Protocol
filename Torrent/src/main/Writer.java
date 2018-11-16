@@ -31,13 +31,13 @@ public class Writer implements Runnable {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					LOGGER.error("Thread sleep has been interrupted.", e);
+					LOGGER.error("Thread sleep has been interrupted.");
 				}
 			}
 			this.output.close();
 			LOGGER.info("Writer Terminated Gracefully!");
 		} catch (IOException e) {
-			LOGGER.error("Writer Terminated Error Unexpectedly! ", e);
+			LOGGER.error("Writer Terminated Error Unexpectedly!");
 			state.setKill(true);
 		}
 	}

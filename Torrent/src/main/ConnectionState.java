@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.Queue;
 
 public class ConnectionState {
-	private boolean kill = false;
+	private volatile boolean kill = false;
 	private Socket socket;
 	private Queue<String> readQueue;
 	private Queue<String> writeQueue;
@@ -22,7 +22,7 @@ public class ConnectionState {
 	}
 
 	public void setKill(boolean kill) {
-		this.kill = kill;
+			this.kill = kill;
 	}
 
 	public boolean hasRead() {
@@ -57,8 +57,7 @@ public class ConnectionState {
 
 	public String dequeueRead() {
 		synchronized (readQueueLock) {
-			String mes = readQueue.poll();
-			return mes;
+			return readQueue.poll();
 		}
 	}
 
@@ -69,7 +68,7 @@ public class ConnectionState {
 	}
 
 	public boolean isAlive() {
-		return !kill;
+			return !kill;			
 	}
 
 	public void clearWriteQueue() {

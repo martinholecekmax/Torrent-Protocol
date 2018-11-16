@@ -46,7 +46,9 @@ public class DownloadManager implements Runnable {
 				if (response.isPresent()) {
 					peers = response.get().getPeers();
 					interval = response.get().getInterval();
-					createDownloadTasks(peers);
+					if(setPeerPublicIP(peers)) {
+						createDownloadTasks(peers);						
+					}					
 				}
 				Thread.sleep(interval);
 			} catch (InterruptedException e) {
@@ -63,16 +65,14 @@ public class DownloadManager implements Runnable {
 	 * 
 	 * @param peers ArrayList of Peers
 	 */
-	public void createDownloadTasks(ArrayList<Peer> peers) {
+	public void createDownloadTasks(ArrayList<Peer> peers) {	
 		for (Peer peer : peers) {
 			try {
 				if (job.isDone()) {
 					break;
 				}
 
-				// Don't connect to same program, get public ip address
 				if (peer.getPeerID().equals(client.getPeerID())) {
-					client.setIpAddress(peer.getIpAddress());
 					continue;
 				}
 
@@ -85,7 +85,7 @@ public class DownloadManager implements Runnable {
 				Socket socket = null;
 				if (peer.getIpAddress().equals(client.getIpAddress())) {
 					socket = new Socket(peer.getLocalIP(), peer.getPort());
-				} else {
+				} else {				
 					socket = new Socket(peer.getIpAddress(), peer.getPort());
 				}
 				if (socket.isConnected()) {
@@ -94,12 +94,23 @@ public class DownloadManager implements Runnable {
 				}
 
 			} catch (UnknownHostException e) {
-				LOGGER.debug("Couldn't connect to a peer. Port: " + peer.getPort() + "IP: " + peer.getIpAddress());
+				LOGGER.debug("Couldn't connect to a peer. Port: " + peer.getPort() + " IP: " + peer.getIpAddress());
 				continue;
 			} catch (IOException e) {
-				LOGGER.debug("Couldn't create client socket. Port: " + peer.getPort() + "IP: " + peer.getIpAddress());
+				LOGGER.debug("Couldn't create client socket. Port: " + peer.getPort() + " IP: " + peer.getIpAddress());
 				continue;
 			}
 		}
+	}
+
+	private boolean setPeerPublicIP(ArrayList<Peer> peers) {
+		for (Peer peer : peers) {
+			// Don't connect to same program, get public ip address
+			if (peer.getPeerID().equals(client.getPeerID())) {
+				client.setIpAddress(peer.getIpAddress());
+				return true;
+			}
+		}
+		return false;
 	}
 }

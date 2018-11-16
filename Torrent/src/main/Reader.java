@@ -30,13 +30,13 @@ public class Reader implements Runnable {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					LOGGER.error("Thread sleep has been interrupted.", e);
+					LOGGER.error("Thread sleep has been interrupted.");
 				}
 			}
 			this.input.close();
 			LOGGER.info("Reader Terminated Gracefully!");
 		} catch (IOException e) {
-			LOGGER.error("Reader Thread failed to read from input stream.", e);
+			LOGGER.error("Reader Thread failed to read from input stream.");
 			state.setKill(true);
 		}
 	}

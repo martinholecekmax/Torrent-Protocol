@@ -45,8 +45,7 @@ public class Server implements Runnable {
 
 				connections.add(socket);
 				ServerHandler connection = new ServerHandler(socket, connections, fileManager);
-				executorService.execute(connection);
-//				executorService.submit(connection);
+				executorService.submit(connection);
 			}
 			serverSocket.close();
 			executorService.shutdown();
