@@ -37,4 +37,27 @@ public class CSVFileHandler {
 			LOGGER.error("Writing into file failed.", e);
 		}
 	}
+
+	public static void writeTime(String type) {
+		try {
+			File file = new File("statistics.csv");
+			FileWriter fileWriter;
+			if (file.exists()) {
+				fileWriter = new FileWriter(file, true);// if file exists append to file. Works fine.
+			} else {
+				file.createNewFile();
+				fileWriter = new FileWriter(file);
+			}
+			fileWriter.append(type);
+			fileWriter.append(",");
+			fileWriter.append(System.currentTimeMillis() + " ms");
+			fileWriter.append(",");
+			fileWriter.append(System.currentTimeMillis() + "");
+			fileWriter.append(",");
+			fileWriter.append("\n");
+			fileWriter.close();
+		} catch (IOException e) {
+			LOGGER.error("Writing into file failed.", e);
+		}
+	}
 }

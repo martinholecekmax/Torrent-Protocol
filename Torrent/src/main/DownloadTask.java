@@ -10,7 +10,6 @@ import java.util.Optional;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
-import file.CSVFileHandler;
 import file.FileManager;
 import utils.Utility;
 
@@ -93,14 +92,11 @@ public class DownloadTask implements Runnable {
 					if (stored) {
 						LOGGER.trace("Piece: " + piece.getIndex() + " stored successfully!");
 					} else {
-						LOGGER.trace("Piece: " + index + " hasn't been stored!");
+						LOGGER.trace("Invalid Piece: " + index + " storing unsuccessfull!");
 					}
 				} else {
 					LOGGER.error("Generating of piece hash failed!");					
 				}
-
-				// TEST time of receiving
-				CSVFileHandler.writeTime("Reieved", index);
 			} else if (message.startsWith("NOPIECE")) {				
 				LOGGER.trace("This peer doesn't have a piece: " + message);
 			} else if (message.startsWith("KEEPALIVE")) {

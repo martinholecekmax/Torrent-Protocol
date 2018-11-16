@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import file.CSVFileHandler;
 import file.FileManager;
 import tracker.TrackerClientSSL;
 import tracker.TrackerResponse;
@@ -39,6 +40,7 @@ public class DownloadManager implements Runnable {
 
 	@Override
 	public void run() {
+		CSVFileHandler.writeTime("Start Download");
 		while (!job.isDone()) {
 			try {
 				Optional<TrackerResponse> response = TrackerClientSSL.getResponse(job.getTorrentMetadata(), client,
@@ -58,6 +60,7 @@ public class DownloadManager implements Runnable {
 		fileManager.contactTracker();
 		executorService.shutdown();
 		LOGGER.info("Job Finished " + job.getTorrentMetadata().getInfo().getName());
+		CSVFileHandler.writeTime("Finished Download");
 	}
 
 	/**
