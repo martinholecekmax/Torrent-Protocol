@@ -12,7 +12,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
 import file.FileManager;
-import test.ChaosMonkey;
 
 public class ServerHandler implements Runnable {
 
@@ -27,8 +26,8 @@ public class ServerHandler implements Runnable {
 	public ServerHandler(Socket socket, ArrayList<Socket> connections, FileManager fileManager) {
 		LOGGER.info("Server -> Peer Connected: " + socket.getRemoteSocketAddress());		
 		state = new ConnectionState(socket);		
-		reader = new Reader(state);
-		writer = new Writer(state);
+		reader = new Reader(state, "Server Reader");
+		writer = new Writer(state, "Server Writer");
 		this.connections = connections;
 		this.fileManager = fileManager;
 	}
@@ -48,7 +47,7 @@ public class ServerHandler implements Runnable {
 				Thread.sleep(DEFAULT_BANDWIDTH);
 				keepAlive();
 			} catch (InterruptedException e) {
-				LOGGER.error("Thread sleep has been interrupted.", e);
+				LOGGER.error("Server Handler Thread sleep has been interrupted.");
 			}
 		}
 
@@ -78,7 +77,6 @@ public class ServerHandler implements Runnable {
 	public void processCommands() throws InterruptedException {
 		if (state.hasRead()) {
 			String message = state.dequeueRead();
-
 			if (message.startsWith("PIECEEXISTS")) {
 				// PIECEEXISTS FILE_ID_HASH PIECE_INDEX
 				String[] messageSplit = message.split(" ");
@@ -91,7 +89,10 @@ public class ServerHandler implements Runnable {
 				else if (piece.isPresent()) {
 					Optional<byte[]> data = piece.get().getData();
 					if (data.isPresent()) {
-//						ChaosMonkey.randomlyChangePiece(data.get(), 10);
+						
+						// Introduce corrupted data
+//						ChaosMonkey.randomlyChangePiece(data.get(), 50);
+						
 						String dataEncoded = new String(Base64.encodeBase64(data.get()));						
 						state.enqueueWrite("HAVEPIECE " + infoHash + " " + index + " " + dataEncoded);						
 					} else {
@@ -104,8 +105,10 @@ public class ServerHandler implements Runnable {
 				}
 			} else if (message.startsWith("DISCONNECT")) {
 				LOGGER.info("Server disconnects ...");
-				Thread.sleep(100);
 				state.setKill(true);
+				Thread.sleep(100);
+				state.clearReadQueue();
+				state.clearWriteQueue();
 			} else {
 				LOGGER.warn("SYNTAX ERROR " + message);
 			}

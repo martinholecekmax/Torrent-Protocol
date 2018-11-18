@@ -35,6 +35,12 @@ import main.TorrentMetadata;
 import main.TorrentStatus;
 
 public class TrackerClientSSL {
+	public static void deleteAllPeers() {
+//		https://commerce3.derby.ac.uk/~st100344605/api/delete-all
+		TrackerClientSSL trackerClient = new TrackerClientSSL();
+		trackerClient.jsonGetRequest("https://commerce3.derby.ac.uk/~st100344605/api/delete-all");
+	}
+	
 	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 
 	/**
@@ -167,7 +173,7 @@ public class TrackerClientSSL {
 	 * @throws NoSuchAlgorithmException
 	 * @throws KeyManagementException
 	 */
-	private Optional<String> jsonGetRequest(String urlQueryString) {
+	public Optional<String> jsonGetRequest(String urlQueryString) {
 		try {
 			TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 				@Override
@@ -225,5 +231,6 @@ public class TrackerClientSSL {
 			LOGGER.error(e);
 		}
 		return Optional.empty();
-	}
+	}	
 }
+

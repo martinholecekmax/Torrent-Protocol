@@ -19,7 +19,9 @@ public class Server implements Runnable {
 	private boolean running = true;
 	private FileManager fileManager;
 	private ArrayList<Socket> connections;
-	private JobUpdater jobUpdater;	
+	private JobUpdater jobUpdater;
+	private ExecutorService executorService;
+	private ExecutorService jobUpdaterService;	
 	
 	public Server(ServerSocket serverSocket, FileManager fileManager) {
 		this.serverSocket = serverSocket;
@@ -31,14 +33,14 @@ public class Server implements Runnable {
 	@Override
 	public void run() {
 		try {
-			Thread jobUpdaterThread = new Thread(jobUpdater, "Job Updater Thread");
-			jobUpdaterThread.start();
-			
+			jobUpdaterService = Executors.newSingleThreadExecutor();
+			jobUpdaterService.submit(jobUpdater);			
+						
 			LOGGER.info("Server Created ...");
 			LOGGER.info("IP: " + serverSocket.getInetAddress().toString());
 			LOGGER.info("Port: " + serverSocket.getLocalPort());
 			
-			ExecutorService executorService = Executors.newFixedThreadPool(MAX_SERVER_THREADS);
+			executorService = Executors.newFixedThreadPool(MAX_SERVER_THREADS);
 
 			while (running) {
 				Socket socket = serverSocket.accept();				
@@ -47,10 +49,27 @@ public class Server implements Runnable {
 				ServerHandler connection = new ServerHandler(socket, connections, fileManager);
 				executorService.submit(connection);
 			}
-			serverSocket.close();
-			executorService.shutdown();
 		} catch (IOException e) {
-			LOGGER.error("Server Socket failed.", e);
+			LOGGER.error("Server Socket failed. Accept method interrupted." + e.getMessage());
 		}
+	}
+	
+	public void close() {
+		running = false;
+		if (!jobUpdaterService.isShutdown()) {			
+			jobUpdaterService.shutdownNow();
+		}
+		if (!executorService.isShutdown()) {
+			executorService.shutdownNow();			
+		}
+		if (serverSocket != null) {
+			try {
+				if (!serverSocket.isClosed()) {
+					serverSocket.close();					
+				}
+			} catch (IOException e) {
+				LOGGER.error("Something wrong with closing server socket.", e);
+			}				
+		}		
 	}
 }

@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,7 +20,7 @@ import file.FileManager;
 import tracker.TrackerClientSSL;
 import tracker.TrackerResponse;
 
-public class DownloadManager implements Runnable {
+public class DownloadManager implements Callable<Boolean> {
 
 	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 	private ArrayList<Peer> peers;
@@ -38,29 +40,37 @@ public class DownloadManager implements Runnable {
 		executorService = Executors.newFixedThreadPool(MAX_CLIENT_THREADS);
 	}
 
-	@Override
-	public void run() {
-		CSVFileHandler.writeTime("Start Download");
+	public Boolean call() {
+		Thread.currentThread().setName("Download Manager");
+		
+		long startTime = System.currentTimeMillis();
 		while (!job.isDone()) {
 			try {
 				Optional<TrackerResponse> response = TrackerClientSSL.getResponse(job.getTorrentMetadata(), client,
 						job.getStatus());
 				if (response.isPresent()) {
 					peers = response.get().getPeers();
-					interval = response.get().getInterval();
-					if(setPeerPublicIP(peers)) {
-						createDownloadTasks(peers);						
-					}					
+//					interval = response.get().getInterval();
+					interval = 2000;
+					if (setPeerPublicIP(peers)) {
+						createDownloadTasks(peers);
+					}
 				}
 				Thread.sleep(interval);
 			} catch (InterruptedException e) {
 				LOGGER.warn("Thread sleep has been interrupted.", e);
 			}
 		}
+		
+		// Measure time of download
+		long endTime = System.currentTimeMillis();
+		String testId = UUID.randomUUID().toString();
+		CSVFileHandler.writeTime((endTime - startTime), testId);
+		
 		fileManager.contactTracker();
 		executorService.shutdown();
 		LOGGER.info("Job Finished " + job.getTorrentMetadata().getInfo().getName());
-		CSVFileHandler.writeTime("Finished Download");
+		return true;
 	}
 
 	/**
@@ -68,7 +78,7 @@ public class DownloadManager implements Runnable {
 	 * 
 	 * @param peers ArrayList of Peers
 	 */
-	public void createDownloadTasks(ArrayList<Peer> peers) {	
+	public void createDownloadTasks(ArrayList<Peer> peers) {
 		for (Peer peer : peers) {
 			try {
 				if (job.isDone()) {
@@ -88,7 +98,7 @@ public class DownloadManager implements Runnable {
 				Socket socket = null;
 				if (peer.getIpAddress().equals(client.getIpAddress())) {
 					socket = new Socket(peer.getLocalIP(), peer.getPort());
-				} else {				
+				} else {
 					socket = new Socket(peer.getIpAddress(), peer.getPort());
 				}
 				if (socket.isConnected()) {

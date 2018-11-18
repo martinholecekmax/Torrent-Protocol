@@ -19,12 +19,14 @@ public class JobUpdater implements Runnable {
 
 	@Override
 	public void run() {
+		Thread.currentThread().setName("Job Updater");
 		while (running) {
-			updateJobs();
+			updateJobs();			
 			try {
 				Thread.sleep(CONTACT_TRACKER_TIMER);
 			} catch (InterruptedException e) {
-				LOGGER.error("Thread sleep has been interrupted.", e);
+				LOGGER.error("Job Updater Thread sleep has been interrupted.");
+				break;
 			}
 		}
 	}
@@ -33,5 +35,9 @@ public class JobUpdater implements Runnable {
 		if (fileManager.size() > 0) {
 			fileManager.contactTracker();			
 		}
+	}
+	
+	public void close() {
+		Thread.currentThread().interrupt();
 	}
 }

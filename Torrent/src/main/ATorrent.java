@@ -2,6 +2,7 @@ package main;
 
 import static utils.Constants.TORRENT_ROOT_LOCATION;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -9,9 +10,11 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import file.FileManager;
 
@@ -19,28 +22,25 @@ enum Process {
 	LOAD, CREATE
 }
 
-public class ATorrent {
+public class ATorrent implements Closeable{
 	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 	private String filename;
 	private String torrentFileName;
 	private String location;
 	private String storeLocation;
 	private FileManager fileManager;
-
-	public static void main(String[] args) {
-		PropertyConfigurator.configure("properties/log4j.properties");
-		LOGGER.info("Program Started ...");
-		ATorrent aTorrent = new ATorrent();
-//		aTorrent.torrentProcess(Process.LOAD);
-		aTorrent.torrentProcess(Process.CREATE);
-	}
-
+	private ServerSocket serverSocket;
+	private Server listener;
+	private ExecutorService downloadExecutorService;
+	
 	public ATorrent() {
 		initialize();
 	}
 	
 	public void initialize() {
 		try {
+			LOGGER.info("Program Started ...");
+
 			filename = System.getProperty("user.dir") + "/empty_20MB.txt";
 			torrentFileName = System.getProperty("user.dir") + "/empty_20MB.temp";
 			location = System.getProperty("user.dir") + "\\";
@@ -49,8 +49,7 @@ public class ATorrent {
 			// Load previous jobs from dat file
 //			fileManager.loadJobs();
 
-			// Start Server
-			ServerSocket serverSocket = new ServerSocket(0);
+			serverSocket = new ServerSocket(0);
 
 			String localIP = getLocalIP();
 
@@ -60,10 +59,12 @@ public class ATorrent {
 			// Initialize FileManager
 			fileManager = new FileManager(peer);
 
-			Server listener = new Server(serverSocket, fileManager);
+			listener = new Server(serverSocket, fileManager);
 			Thread thread = new Thread(listener, "Listener thread.");
 			thread.start();
 
+			downloadExecutorService = Executors.newCachedThreadPool();
+			
 		} catch (IOException e) {
 			LOGGER.fatal("Failed to create server socket", e);
 		}
@@ -80,17 +81,16 @@ public class ATorrent {
 		return localIP;
 	}
 
-	private void torrentProcess(Process start) {
+	public Optional<Future<Boolean>> torrentProcess(Process start) {
 		switch (start) {
 		case CREATE:
 			createTorrent(fileManager, filename, location);
-			break;
+			return Optional.empty();
 		case LOAD:
-			loadTorrent(fileManager, torrentFileName, storeLocation);
-			break;
+			return loadTorrent(fileManager, torrentFileName, storeLocation);
 		default:
 			createTorrent(fileManager, filename, location);
-			break;
+			return Optional.empty();
 		}
 	}
 
@@ -122,7 +122,7 @@ public class ATorrent {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	private void loadTorrent(FileManager fileManager, String torrentFileName, String storeLocation) {
+	private Optional<Future<Boolean>> loadTorrent(FileManager fileManager, String torrentFileName, String storeLocation) {
 		try {
 			TorrentProcessor processor = new TorrentProcessor();
 			TorrentMetadata torrentMetadata;
@@ -130,10 +130,10 @@ public class ATorrent {
 			Optional<Job> job = fileManager.createJob(torrentMetadata, storeLocation);
 			if (job.isPresent()) {
 				DownloadManager downloadManager = new DownloadManager(job.get(), fileManager);
-				Thread downloadManagerThread = new Thread(downloadManager, "Download Manager Thread");
-				downloadManagerThread.start();
+				Future<Boolean> downloadJob = downloadExecutorService.submit(downloadManager);
 				LOGGER.info(
 						"LOAD TORRENT METADATA Pieces: " + job.get().numPieces() + " " + torrentMetadata.getInfoHash());
+				return Optional.of(downloadJob);
 			} else {
 				LOGGER.fatal("Job creation failed.");
 			}
@@ -142,5 +142,12 @@ public class ATorrent {
 		} catch (IOException e) {
 			LOGGER.fatal("Loading torrent failed.", e);
 		}
+		return Optional.empty();
+	}
+
+	@Override
+	public void close() throws IOException {
+		listener.close();
+		downloadExecutorService.shutdownNow();
 	}
 }

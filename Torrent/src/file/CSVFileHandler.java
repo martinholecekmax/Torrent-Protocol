@@ -38,7 +38,7 @@ public class CSVFileHandler {
 		}
 	}
 
-	public static void writeTime(String type) {
+	public static void writeTime(long time, String testId) {
 		try {
 			File file = new File("statistics.csv");
 			FileWriter fileWriter;
@@ -48,11 +48,9 @@ public class CSVFileHandler {
 				file.createNewFile();
 				fileWriter = new FileWriter(file);
 			}
-			fileWriter.append(type);
+			fileWriter.append(testId);
 			fileWriter.append(",");
-			fileWriter.append(System.currentTimeMillis() + " ms");
-			fileWriter.append(",");
-			fileWriter.append(System.currentTimeMillis() + "");
+			fileWriter.append(time + "");
 			fileWriter.append(",");
 			fileWriter.append("\n");
 			fileWriter.close();
