@@ -31,7 +31,8 @@ public class ATorrent implements Closeable{
 	private FileManager fileManager;
 	private ServerSocket serverSocket;
 	private Server listener;
-	private ExecutorService downloadExecutorService;
+	private ExecutorService downloadExecutorService = null;
+	private boolean isInitialize = false;
 	
 	public ATorrent() {
 		initialize();
@@ -64,16 +65,18 @@ public class ATorrent implements Closeable{
 			thread.start();
 
 			downloadExecutorService = Executors.newCachedThreadPool();
+			isInitialize = true;
 			
 		} catch (IOException e) {
 			LOGGER.fatal("Failed to create server socket", e);
+			isInitialize = false;
 		}
 	}
 
 	private String getLocalIP() throws SocketException, UnknownHostException {
 		String localIP = "";
 		try (final DatagramSocket socket = new DatagramSocket()) {
-			socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+			socket.connect(InetAddress.getByName("8.8.8.8"), 0);
 			localIP = socket.getLocalAddress().getHostAddress();
 		} catch (UnknownHostException e) {
 			localIP = InetAddress.getLocalHost().getHostAddress();
@@ -82,14 +85,17 @@ public class ATorrent implements Closeable{
 	}
 
 	public Optional<Future<Boolean>> torrentProcess(Process start) {
+		if (!isInitialize) {
+			return Optional.empty();
+		}
 		switch (start) {
 		case CREATE:
-			createTorrent(fileManager, filename, location);
+			createTorrent();
 			return Optional.empty();
 		case LOAD:
-			return loadTorrent(fileManager, torrentFileName, storeLocation);
+			return loadTorrent();
 		default:
-			createTorrent(fileManager, filename, location);
+			createTorrent();
 			return Optional.empty();
 		}
 	}
@@ -102,7 +108,7 @@ public class ATorrent implements Closeable{
 	 * @param location
 	 * @throws IOException
 	 */
-	private void createTorrent(FileManager fileManager, String filename, String location) {
+	private void createTorrent() {
 		try {
 			TorrentProcessor processor = new TorrentProcessor();
 			Job job = processor.createMetadataFile(fileManager, filename, location, "Martin");
@@ -122,7 +128,7 @@ public class ATorrent implements Closeable{
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	private Optional<Future<Boolean>> loadTorrent(FileManager fileManager, String torrentFileName, String storeLocation) {
+	private Optional<Future<Boolean>> loadTorrent() {
 		try {
 			TorrentProcessor processor = new TorrentProcessor();
 			TorrentMetadata torrentMetadata;
@@ -147,7 +153,11 @@ public class ATorrent implements Closeable{
 
 	@Override
 	public void close() throws IOException {
-		listener.close();
-		downloadExecutorService.shutdownNow();
+		if (listener != null) {
+			listener.close();			
+		}
+		if (downloadExecutorService != null) {
+			downloadExecutorService.shutdownNow();
+		}
 	}
 }

@@ -30,6 +30,8 @@ public class DownloadManager implements Callable<Boolean> {
 	private FileManager fileManager;
 	private int interval;
 	private ExecutorService executorService;
+	private boolean started = false;
+	private long startTime;
 
 	public DownloadManager(Job job, FileManager fileManager) {
 		this.job = job;
@@ -43,7 +45,6 @@ public class DownloadManager implements Callable<Boolean> {
 	public Boolean call() {
 		Thread.currentThread().setName("Download Manager");
 		
-		long startTime = System.currentTimeMillis();
 		while (!job.isDone()) {
 			try {
 				Optional<TrackerResponse> response = TrackerClientSSL.getResponse(job.getTorrentMetadata(), client,
@@ -102,6 +103,11 @@ public class DownloadManager implements Callable<Boolean> {
 					socket = new Socket(peer.getIpAddress(), peer.getPort());
 				}
 				if (socket.isConnected()) {
+					if (!started) {
+						startTime = System.currentTimeMillis();
+						started = true;
+					}					
+					
 					DownloadTask task = new DownloadTask(socket, fileManager, connectedPeers, peer, job);
 					executorService.submit(task);
 				}

@@ -15,23 +15,24 @@ public class TorrentMain {
 	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 		
 	public static void main(String[] args) {
+		PropertyConfigurator.configure("properties/log4j.properties");
 		TorrentMain main = new TorrentMain();
-		main.runTrials(1);
-//		main.runClient();
+//		main.runTrials(1);
+		for (int i = 0; i < 20; i++) {
+			main.runClient();
+			LOGGER.info("Test done: " + i);
+		}
+		LOGGER.info("Trial FINISHED");
 //		main.runServer();
 	}
 	
-	public void runServer() {
-		PropertyConfigurator.configure("properties/log4j.properties");
-		
+	public void runServer() {		
 		@SuppressWarnings("resource")
 		ATorrent aTorrent = new ATorrent();
 		aTorrent.torrentProcess(Process.CREATE);		
 	}
 	
-	public void runClient() {
-		PropertyConfigurator.configure("properties/log4j.properties");
-		
+	public void runClient() {		
 		ATorrent aTorrent = new ATorrent();
 		Optional<Future<Boolean>> downloadJob = aTorrent.torrentProcess(Process.LOAD);	
 		if (downloadJob.isPresent()) {
@@ -51,9 +52,7 @@ public class TorrentMain {
 		}
 	}
 	
-	public void runTrials(int numberTrials) {		
-		PropertyConfigurator.configure("properties/log4j.properties");
-		
+	public void runTrials(int numberTrials) {				
 		for (int i = 0; i < numberTrials; i++) {			
 			ATorrent aTorrent = new ATorrent();
 			aTorrent.torrentProcess(Process.CREATE);
