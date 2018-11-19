@@ -1,8 +1,5 @@
 package main;
 
-import static utils.Constants.TORRENT_ROOT_LOCATION;
-
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -15,37 +12,22 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import file.FileManager;
 
-enum Process {
-	LOAD, CREATE
-}
-
-public class ATorrent implements Closeable{
+public class ATorrent{
 	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
-	private String filename;
-	private String torrentFileName;
-	private String location;
-	private String storeLocation;
 	private FileManager fileManager;
 	private ServerSocket serverSocket;
 	private Server listener;
 	private ExecutorService downloadExecutorService = null;
-	private boolean isInitialize = false;
-	
-	public ATorrent() {
-		initialize();
-	}
-	
-	public void initialize() {
+		
+	public void start() {
 		try {
-			LOGGER.info("Program Started ...");
+			PropertyConfigurator.configure("properties/log4j.properties");
 
-			filename = System.getProperty("user.dir") + "/empty_20MB.txt";
-			torrentFileName = System.getProperty("user.dir") + "/empty_20MB.temp";
-			location = System.getProperty("user.dir") + "\\";
-			storeLocation = TORRENT_ROOT_LOCATION + "test\\";
+			LOGGER.info("Program Started ...");
 
 			// Load previous jobs from dat file
 //			fileManager.loadJobs();
@@ -65,11 +47,9 @@ public class ATorrent implements Closeable{
 			thread.start();
 
 			downloadExecutorService = Executors.newCachedThreadPool();
-			isInitialize = true;
 			
 		} catch (IOException e) {
 			LOGGER.fatal("Failed to create server socket", e);
-			isInitialize = false;
 		}
 	}
 
@@ -84,22 +64,6 @@ public class ATorrent implements Closeable{
 		return localIP;
 	}
 
-	public Optional<Future<Boolean>> torrentProcess(Process start) {
-		if (!isInitialize) {
-			return Optional.empty();
-		}
-		switch (start) {
-		case CREATE:
-			createTorrent();
-			return Optional.empty();
-		case LOAD:
-			return loadTorrent();
-		default:
-			createTorrent();
-			return Optional.empty();
-		}
-	}
-
 	/**
 	 * Create Metadata file.
 	 * 
@@ -108,7 +72,7 @@ public class ATorrent implements Closeable{
 	 * @param location
 	 * @throws IOException
 	 */
-	private void createTorrent() {
+	public void createTorrent(String filename, String location) {
 		try {
 			TorrentProcessor processor = new TorrentProcessor();
 			Job job = processor.createMetadataFile(fileManager, filename, location, "Martin");
@@ -128,7 +92,7 @@ public class ATorrent implements Closeable{
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	private Optional<Future<Boolean>> loadTorrent() {
+	public Optional<Future<Boolean>> loadTorrent(String torrentFileName, String storeLocation) {
 		try {
 			TorrentProcessor processor = new TorrentProcessor();
 			TorrentMetadata torrentMetadata;
@@ -151,7 +115,6 @@ public class ATorrent implements Closeable{
 		return Optional.empty();
 	}
 
-	@Override
 	public void close() throws IOException {
 		if (listener != null) {
 			listener.close();			

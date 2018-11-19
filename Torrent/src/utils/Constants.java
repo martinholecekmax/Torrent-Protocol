@@ -3,6 +3,8 @@ package utils;
 public class Constants {
 	/**	Default torrent location where the files will be stored	 */
 	public static String TORRENT_ROOT_LOCATION = System.getProperty("user.home") + "\\Desktop\\";
+	/** Project root directory */
+	public static String PROJECT_ROOT_DIRECTORY = System.getProperty("user.dir");
 	/** Extension of the torrent metadata file that is save on the PC. */
 	public static final String TORRENT_EXTENSION = ".temp";	
 	/** Default size of piece which will be used for splitting of the files (256KB)	 */
