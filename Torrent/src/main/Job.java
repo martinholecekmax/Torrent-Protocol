@@ -123,7 +123,7 @@ public class Job implements Serializable {
 	 * @return instance of Piece class.
 	 */
 	public Optional<Piece> findLessSeenPiece() {
-		synchronized (pieceListLock) {			
+		synchronized (pieceListLock) {	
 			Optional<Piece> lessSeenPiece = Optional.empty();
 			for (Piece piece : pieces) {
 				if (piece.isStored()) {

@@ -12,6 +12,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
 import file.FileManager;
+import test.ChaosMonkey;
 
 public class ServerHandler implements Runnable {
 
@@ -91,7 +92,7 @@ public class ServerHandler implements Runnable {
 					if (data.isPresent()) {
 						
 						// Introduce corrupted data
-//						ChaosMonkey.randomlyChangePiece(data.get(), 50);
+						ChaosMonkey.randomlyChangePiece(data.get(), 50);
 						
 						String dataEncoded = new String(Base64.encodeBase64(data.get()));						
 						state.enqueueWrite("HAVEPIECE " + infoHash + " " + index + " " + dataEncoded);						

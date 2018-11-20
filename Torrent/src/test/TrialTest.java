@@ -1,6 +1,5 @@
 package test;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -41,7 +40,7 @@ public class TrialTest {
 				TrackerClientSSL.deleteAllPeers();
 				LOGGER.info("Test " + i + " Terminated.");
 				Thread.sleep(100);
-			} catch (IOException | InterruptedException e) {
+			} catch (InterruptedException e) {
 				LOGGER.error("Terminated Error. " + e.getMessage());
 			}
 		}		

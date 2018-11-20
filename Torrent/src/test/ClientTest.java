@@ -3,7 +3,6 @@ package test;
 import static utils.Constants.PROJECT_ROOT_DIRECTORY;
 import static utils.Constants.TORRENT_ROOT_LOCATION;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -24,12 +23,12 @@ class ClientTest {
 	
 	void test() {
 //		torrentFileName = PROJECT_ROOT_DIRECTORY + "/empty_1MB.temp";
-//		torrentFileName = PROJECT_ROOT_DIRECTORY + "/empty_20MB.temp";
-		torrentFileName = PROJECT_ROOT_DIRECTORY + "/empty_100MB.temp";
+		torrentFileName = PROJECT_ROOT_DIRECTORY + "/empty_20MB.temp";
+//		torrentFileName = PROJECT_ROOT_DIRECTORY + "/empty_100MB.temp";
 		storeLocation = TORRENT_ROOT_LOCATION + "test\\";		
 				
 		LOGGER.info("Test Started ...");
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 1; i++) {
 			runClient();
 			LOGGER.info("Test done: " + i);
 		}
@@ -49,11 +48,8 @@ class ClientTest {
 				LOGGER.error("Test Terminated.");					
 			}
 		}
-		try {
-			aTorrent.close();
-			System.gc();
-		} catch (IOException e) {
-			LOGGER.error("Terminated Error. " + e.getMessage());
-		}
+		aTorrent.close();
+		System.gc();
+		LOGGER.error("Client Finished.");
 	}
 }

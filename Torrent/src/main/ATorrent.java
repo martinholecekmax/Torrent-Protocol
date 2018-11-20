@@ -16,13 +16,13 @@ import org.apache.log4j.PropertyConfigurator;
 
 import file.FileManager;
 
-public class ATorrent{
+public class ATorrent {
 	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 	private FileManager fileManager;
 	private ServerSocket serverSocket;
 	private Server listener;
 	private ExecutorService downloadExecutorService = null;
-		
+
 	public void start() {
 		try {
 			PropertyConfigurator.configure("properties/log4j.properties");
@@ -47,19 +47,22 @@ public class ATorrent{
 			thread.start();
 
 			downloadExecutorService = Executors.newCachedThreadPool();
-			
+
 		} catch (IOException e) {
 			LOGGER.fatal("Failed to create server socket", e);
+			close();
 		}
 	}
 
-	private String getLocalIP() throws SocketException, UnknownHostException {
+	private String getLocalIP() throws UnknownHostException {
 		String localIP = "";
-		try (final DatagramSocket socket = new DatagramSocket()) {
+		try (DatagramSocket socket = new DatagramSocket()) {
 			socket.connect(InetAddress.getByName("8.8.8.8"), 0);
 			localIP = socket.getLocalAddress().getHostAddress();
-		} catch (UnknownHostException e) {
 			localIP = InetAddress.getLocalHost().getHostAddress();
+		} catch (SocketException e) {
+			localIP = InetAddress.getLocalHost().getHostAddress();
+			LOGGER.fatal("Get private IP address failed.", e);
 		}
 		return localIP;
 	}
@@ -115,9 +118,9 @@ public class ATorrent{
 		return Optional.empty();
 	}
 
-	public void close() throws IOException {
+	public void close() {
 		if (listener != null) {
-			listener.close();			
+			listener.close();
 		}
 		if (downloadExecutorService != null) {
 			downloadExecutorService.shutdownNow();

@@ -36,7 +36,6 @@ public class FileManager {
 	private FileHandler fileHandler = new FileHandler();
 	private Peer peer;
 
-	private Object pieceLock = new Object();
 	private Object jobsLock = new Object();
 
 	public FileManager(Peer peer) {
@@ -100,7 +99,7 @@ public class FileManager {
 	 *         False.
 	 */
 	public boolean storePiece(String infoHash, Piece piece) {
-		synchronized (pieceLock) {
+		synchronized (jobsLock) {
 			for (Job job : jobs) {
 				if (job.getTorrentInfoHash().equals(infoHash)) {
 					return job.storePiece(piece);

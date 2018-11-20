@@ -121,12 +121,12 @@ public class DownloadTask implements Runnable {
 			state.enqueueWrite("DISCONNECT");
 			state.setKill(true);
 		} else if (state.isAlive()){
-			job.isJobDone();
 			if (!job.isDone()) {
 				Optional<Piece> piece = job.findLessSeenPiece();
 				if (piece.isPresent()) {
 					String infoHash = job.getTorrentInfoHash();
 					state.enqueueWrite("PIECEEXISTS " + infoHash + " " + piece.get().getIndex());
+					LOGGER.trace("Piece: " + piece.get().getIndex() + " SENDING!");
 				}
 			}
 		}
