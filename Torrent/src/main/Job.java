@@ -17,7 +17,7 @@ public class Job implements Serializable {
 	private ArrayList<Piece> pieces;
 	private ArrayList<File> files;
 	private TorrentMetadata torrentMetadata;
-	private boolean done = false;
+	private volatile boolean done = false;
 	private TorrentStatus status;
 	private int bandwidth;
 
@@ -129,27 +129,29 @@ public class Job implements Serializable {
 	 * @return instance of Piece class.
 	 */
 	public Optional<Piece> findLessSeenPiece() {
-		Optional<Piece> lessSeenPiece = Optional.empty();
-		for (Piece piece : pieces) {
-			if (piece.isStored()) {
-				continue;
+		synchronized (pieceListLock) {	
+			Optional<Piece> lessSeenPiece = Optional.empty();
+			for (Piece piece : pieces) {
+				if (piece.isStored()) {
+					continue;
+				}
+				if (!lessSeenPiece.isPresent()) {
+					lessSeenPiece = Optional.of(piece);
+					continue;
+				}
+
+				if (piece.getSeen() < lessSeenPiece.get().getSeen()) {
+					lessSeenPiece = Optional.of(piece);
+				}
 			}
-			if (!lessSeenPiece.isPresent()) {
-				lessSeenPiece = Optional.of(piece);
-				continue;
-			}
-			
-			if (piece.getSeen() < lessSeenPiece.get().getSeen()) {
-				lessSeenPiece = Optional.of(piece);
-			}
-		}
-		if (lessSeenPiece.isPresent()) {
-			pieces.get(pieces.indexOf(lessSeenPiece.get())).addSeen();
+			if (lessSeenPiece.isPresent()) {
+				pieces.get(pieces.indexOf(lessSeenPiece.get())).addSeen();
 //			status.setUploaded(PIECE_SIZE); TODO
-		} else {
-			setDone(true);
+			} else {
+				setDone(true);
+			}
+			return lessSeenPiece;
 		}
-		return lessSeenPiece;
 	}
 
 	/**
@@ -221,7 +223,7 @@ public class Job implements Serializable {
 				if (!hash.isEmpty()) {
 					Piece piece = new Piece(index, hash);
 					piece.setData(data);
-					return Optional.of(piece);					
+					return Optional.of(piece);
 				}
 			}
 			return Optional.empty();

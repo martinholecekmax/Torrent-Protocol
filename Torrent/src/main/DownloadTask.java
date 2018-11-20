@@ -10,7 +10,6 @@ import java.util.Optional;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
-import file.CSVFileHandler;
 import file.FileManager;
 import utils.Utility;
 
@@ -30,8 +29,8 @@ public class DownloadTask implements Runnable {
 		this.fileManager = fileManager;
 		this.connectedPeers = connectedPeers;
 		this.peer = peer;
-		this.reader = new Reader(state);
-		this.writer = new Writer(state);
+		this.reader = new Reader(state, "Client Reader");
+		this.writer = new Writer(state, "Client Writer");
 		this.job = job;
 	}
 
@@ -39,7 +38,7 @@ public class DownloadTask implements Runnable {
 	public void run() {
 		connectedPeers.add(peer);
 		LOGGER.info("Client -> Peer Connected: " + peer.getIpAddress() + ":" + peer.getPort() + " " + peer.getPeerID());
-		
+		Thread.currentThread().setName("Client");
 		Thread readerThread = new Thread(reader, "Client Reader Thread");
 		Thread writerThread = new Thread(writer, "Client Writer Thread");
 		readerThread.start();
@@ -72,11 +71,12 @@ public class DownloadTask implements Runnable {
 
 	/**
 	 * Process response from Peer.
-	 * @throws InterruptedException 
+	 * 
+	 * @throws InterruptedException
 	 */
 	public void processRead() throws InterruptedException {
 		if (state.hasRead()) {
-			String message = state.dequeueRead();
+			String message = state.dequeueRead();			
 			if (message.startsWith("HAVEPIECE")) {
 				String[] messageSplit = message.split(" ");
 				String infoHash = messageSplit[1].trim();
@@ -88,21 +88,20 @@ public class DownloadTask implements Runnable {
 				String hash = Utility.getHahSHA1(data);
 				if (!hash.isEmpty()) {
 					Piece piece = new Piece(index, hash);
-					piece.setData(data);					
+					piece.setData(data);
 					boolean stored = fileManager.storePiece(infoHash, piece);
 					if (stored) {
 						LOGGER.trace("Piece: " + piece.getIndex() + " stored successfully!");
 					} else {
-						LOGGER.trace("Piece: " + index + " hasn't been stored!");
+						LOGGER.trace("Invalid Piece: " + index + " storing unsuccessfull!");
 					}
 				} else {
-					LOGGER.error("Generating of piece hash failed!");					
+					LOGGER.error("Generating of piece hash failed!");
 				}
-
-				// TEST time of receiving
-				CSVFileHandler.writeTime("Reieved", index);
-			} else if (message.startsWith("NOPIECE")) {				
+			} else if (message.startsWith("NOPIECE")) {
 				LOGGER.trace("This peer doesn't have a piece: " + message);
+			} else if (message.startsWith("KEEPALIVE")) {
+				LOGGER.trace("Server sended KEEPALIVE");
 			} else {
 				LOGGER.warn("SYNTAX ERROR " + message);
 			}
@@ -110,23 +109,25 @@ public class DownloadTask implements Runnable {
 	}
 
 	/**
-	 * Ask Peer for Piece.
-	 * @throws InterruptedException 
+	 * Ask Peer for Piece or Disconnect.
+	 * 
+	 * @throws InterruptedException
 	 */
-	public void processWrite() throws InterruptedException {	
-		job.isJobDone();
+	public void processWrite() throws InterruptedException {
 		if (job.isDone() && state.isAlive()) {
 			LOGGER.info("Client sends disconnect");
+			state.clearWriteQueue();
+			state.clearReadQueue();
 			state.enqueueWrite("DISCONNECT");
-			Thread.sleep(100);
-//			state.clearReadQueue();
-//			state.clearWriteQueue();
-			state.setKill(true);	
-		} else if(!job.isDone()){
-			Optional<Piece> piece = job.findLessSeenPiece();
-			if (piece.isPresent()) {
-				String infoHash = job.getTorrentInfoHash();
-				state.enqueueWrite("PIECEEXISTS " + infoHash + " " + piece.get().getIndex());
+			state.setKill(true);
+		} else if (state.isAlive()){
+			if (!job.isDone()) {
+				Optional<Piece> piece = job.findLessSeenPiece();
+				if (piece.isPresent()) {
+					String infoHash = job.getTorrentInfoHash();
+					state.enqueueWrite("PIECEEXISTS " + infoHash + " " + piece.get().getIndex());
+					LOGGER.trace("Piece: " + piece.get().getIndex() + " SENDING!");
+				}
 			}
 		}
 	}

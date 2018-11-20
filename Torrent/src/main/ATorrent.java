@@ -1,7 +1,5 @@
 package main;
 
-import static utils.Constants.TORRENT_ROOT_LOCATION;
-
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -9,88 +7,64 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import file.FileManager;
 
-enum Process {
-	LOAD, CREATE
-}
-
 public class ATorrent {
 	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
-	private String filename;
-	private String torrentFileName;
-	private String location;
-	private String storeLocation;
 	private FileManager fileManager;
+	private ServerSocket serverSocket;
+	private Server listener;
+	private ExecutorService downloadExecutorService = null;
 
-	public static void main(String[] args) {
-		PropertyConfigurator.configure("properties/log4j.properties");
-		LOGGER.info("Program Started ...");
-		ATorrent aTorrent = new ATorrent();
-		aTorrent.torrentProcess(Process.LOAD);
-//		aTorrent.torrentProcess(Process.CREATE);
-	}
-
-	public ATorrent() {
-		initialize();
-	}
-
-	public void initialize() {
+	public void start() {
 		try {
-			filename = System.getProperty("user.dir") + "/empty_20MB.txt";
-			torrentFileName = System.getProperty("user.dir") + "/empty_20MB.temp";
-			location = System.getProperty("user.dir") + "\\";
-			storeLocation = TORRENT_ROOT_LOCATION + "test\\";
+			PropertyConfigurator.configure("properties/log4j.properties");
+
+			LOGGER.info("Program Started ...");
 
 			// Load previous jobs from dat file
 //			fileManager.loadJobs();
 
-			// Start Server
-			ServerSocket serverSocket = new ServerSocket(0);
+			serverSocket = new ServerSocket(0);
 
 			String localIP = getLocalIP();
 
 			Peer peer = new Peer(Optional.empty(), serverSocket.getInetAddress().toString(), localIP,
 					serverSocket.getLocalPort());
 
+			// Initialize FileManager
 			fileManager = new FileManager(peer);
 
-			Server listener = new Server(serverSocket, fileManager);
+			listener = new Server(serverSocket, fileManager);
 			Thread thread = new Thread(listener, "Listener thread.");
 			thread.start();
 
+			downloadExecutorService = Executors.newCachedThreadPool();
+
 		} catch (IOException e) {
 			LOGGER.fatal("Failed to create server socket", e);
+			close();
 		}
 	}
 
-	private String getLocalIP() throws SocketException, UnknownHostException {
+	private String getLocalIP() throws UnknownHostException {
 		String localIP = "";
-		try (final DatagramSocket socket = new DatagramSocket()) {
-			socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+		try (DatagramSocket socket = new DatagramSocket()) {
+			socket.connect(InetAddress.getByName("8.8.8.8"), 0);
 			localIP = socket.getLocalAddress().getHostAddress();
-		} catch (UnknownHostException e) {
 			localIP = InetAddress.getLocalHost().getHostAddress();
+		} catch (SocketException e) {
+			localIP = InetAddress.getLocalHost().getHostAddress();
+			LOGGER.fatal("Get private IP address failed.", e);
 		}
 		return localIP;
-	}
-
-	private void torrentProcess(Process start) {
-		switch (start) {
-		case CREATE:
-			createTorrent(fileManager, filename, location);
-			break;
-		case LOAD:
-			loadTorrent(fileManager, torrentFileName, storeLocation);
-			break;
-		default:
-			createTorrent(fileManager, filename, location);
-			break;
-		}
 	}
 
 	/**
@@ -101,7 +75,7 @@ public class ATorrent {
 	 * @param location
 	 * @throws IOException
 	 */
-	private void createTorrent(FileManager fileManager, String filename, String location) {
+	public void createTorrent(String filename, String location) {
 		try {
 			TorrentProcessor processor = new TorrentProcessor();
 			Job job = processor.createMetadataFile(fileManager, filename, location, "Martin");
@@ -121,7 +95,7 @@ public class ATorrent {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	private void loadTorrent(FileManager fileManager, String torrentFileName, String storeLocation) {
+	public Optional<Future<Boolean>> loadTorrent(String torrentFileName, String storeLocation) {
 		try {
 			TorrentProcessor processor = new TorrentProcessor();
 			TorrentMetadata torrentMetadata;
@@ -129,10 +103,10 @@ public class ATorrent {
 			Optional<Job> job = fileManager.createJob(torrentMetadata, storeLocation);
 			if (job.isPresent()) {
 				DownloadManager downloadManager = new DownloadManager(job.get(), fileManager);
-				Thread downloadManagerThread = new Thread(downloadManager, "Download Manager Thread");
-				downloadManagerThread.start();
+				Future<Boolean> downloadJob = downloadExecutorService.submit(downloadManager);
 				LOGGER.info(
 						"LOAD TORRENT METADATA Pieces: " + job.get().numPieces() + " " + torrentMetadata.getInfoHash());
+				return Optional.of(downloadJob);
 			} else {
 				LOGGER.fatal("Job creation failed.");
 			}
@@ -140,6 +114,16 @@ public class ATorrent {
 			LOGGER.fatal("Data from loaded file are not a TorrentMetadata class type.", e);
 		} catch (IOException e) {
 			LOGGER.fatal("Loading torrent failed.", e);
+		}
+		return Optional.empty();
+	}
+
+	public void close() {
+		if (listener != null) {
+			listener.close();
+		}
+		if (downloadExecutorService != null) {
+			downloadExecutorService.shutdownNow();
 		}
 	}
 }

@@ -11,9 +11,11 @@ public class Writer implements Runnable {
 	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 	private ConnectionState state;
 	private DataOutputStream output = null;
+	private String msg;
 
-	public Writer(ConnectionState state) {
+	public Writer(ConnectionState state, String msg) {
 		this.state = state;
+		this.msg = msg;
 	}
 
 	@Override
@@ -29,15 +31,15 @@ public class Writer implements Runnable {
 					}
 				}
 				try {
-					Thread.sleep(1);
+					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					LOGGER.error("Thread sleep has been interrupted.", e);
+					LOGGER.error(msg + " Thread sleep has been interrupted.");
 				}
 			}
 			this.output.close();
-			LOGGER.info("Writer Terminated Gracefully!");
+			LOGGER.info(msg + " Terminated Gracefully!");
 		} catch (IOException e) {
-			LOGGER.error("Writer Terminated Error Unexpectedly! ", e);
+			LOGGER.error(msg + " Terminated Error Unexpectedly!");
 			state.setKill(true);
 		}
 	}

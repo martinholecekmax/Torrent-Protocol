@@ -199,9 +199,10 @@ public class TorrentMainWindow extends JFrame implements ActionListener{
 		TorrentMetadata torrentMetadata = processor.loadMetadataFile(torrentFileName);
 		Optional<Job> job = fileManager.createJob(torrentMetadata, storeLocation);
 		if (job.isPresent()) {
+			@SuppressWarnings("unused")
 			DownloadManager downloadManager = new DownloadManager(job.get(), fileManager);
-			Thread downloadManagerThread = new Thread(downloadManager, "Download Manager Thread");
-			downloadManagerThread.start();
+//			Thread downloadManagerThread = new Thread(downloadManager, "Download Manager Thread");
+//			downloadManagerThread.start();
 			System.out.println("LOAD TORRENT METADATA");			
 		} else {
 			System.out.println("Error in loading a job.");

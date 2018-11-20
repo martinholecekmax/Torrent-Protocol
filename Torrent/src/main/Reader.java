@@ -11,9 +11,11 @@ public class Reader implements Runnable {
 	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 	private ConnectionState state;
 	private DataInputStream input = null;
+	private String msg;
 
-	public Reader(ConnectionState state) {
+	public Reader(ConnectionState state, String msg) {
 		this.state = state;
+		this.msg = msg;
 	}
 
 	@Override
@@ -28,15 +30,15 @@ public class Reader implements Runnable {
 					}
 				}
 				try {
-					Thread.sleep(1);
+					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					LOGGER.error("Thread sleep has been interrupted.", e);
+					LOGGER.error("Thread sleep has been interrupted.");
 				}
 			}
 			this.input.close();
-			LOGGER.info("Reader Terminated Gracefully!");
+			LOGGER.info(msg + " Terminated Gracefully!");
 		} catch (IOException e) {
-			LOGGER.error("Reader Thread failed to read from input stream.", e);
+			LOGGER.error(msg + " Thread failed to read from input stream.");
 			state.setKill(true);
 		}
 	}

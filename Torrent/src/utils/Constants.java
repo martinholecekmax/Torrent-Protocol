@@ -3,6 +3,8 @@ package utils;
 public class Constants {
 	/**	Default torrent location where the files will be stored	 */
 	public static String TORRENT_ROOT_LOCATION = System.getProperty("user.home") + "\\Desktop\\";
+	/** Project root directory */
+	public static String PROJECT_ROOT_DIRECTORY = System.getProperty("user.dir");
 	/** Extension of the torrent metadata file that is save on the PC. */
 	public static final String TORRENT_EXTENSION = ".temp";	
 	/** Default size of piece which will be used for splitting of the files (256KB)	 */
@@ -23,6 +25,7 @@ public class Constants {
 	public static final int MAX_SERVER_THREADS = 100;
 	/** Maximum number of threads that will be submitted by client */
 	public static final int MAX_CLIENT_THREADS = 100;
-	/** Socket will terminate after inactivity defined by this value (10 minutes) */
-	public static final int SOCKET_TIMEOUT = 600000;	
+	/** Server will send keep alive message to the client, if client is not available then server will terminate */
+	public static final int KEEP_ALIVE_TIMER = 10000;	// 10 Seconds
+	
 }

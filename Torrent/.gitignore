@@ -1,2 +1,10 @@
 /bin/
+/warnings.log
+/statistics.csv
+/resume.dat
+/logging.log
+/errors.log
+/empty_20MB.txt
+/empty_20MB.temp
+/statisticsGraph.xlsx
 /empty_100MB.txt
