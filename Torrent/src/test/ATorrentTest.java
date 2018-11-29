@@ -7,11 +7,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
-import org.junit.jupiter.api.Test;
-
 class ATorrentTest {
 
-	@Test
 	void test() throws SocketException {
 //		ATorrent aTorrent = new ATorrent();
 //		aTorrent.start(true);

@@ -10,9 +10,9 @@ public class Piece implements Comparable<Piece>, Serializable {
 	private int index;
 	private String hash;
 	private int seen;
-	private boolean stored;
+	private volatile boolean stored;
 	private boolean valid;
-	transient private Optional<byte[]> data;
+	private transient Optional<byte[]> data;
 	private boolean dataLoaded;
 
 	public Piece(int index, String hash) {

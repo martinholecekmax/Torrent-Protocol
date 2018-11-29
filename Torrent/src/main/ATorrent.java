@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -20,8 +21,9 @@ public class ATorrent {
 	private static final Logger LOGGER = Logger.getLogger(ATorrent.class);
 	private FileManager fileManager;
 	private ServerSocket serverSocket;
-	private Server listener;
+	private Server listener = null;
 	private ExecutorService downloadExecutorService = null;
+	private boolean closed = false;
 
 	public void start() {
 		try {
@@ -32,7 +34,7 @@ public class ATorrent {
 			// Load previous jobs from dat file
 //			fileManager.loadJobs();
 
-			serverSocket = new ServerSocket(0);
+			getServerSocket();
 
 			String localIP = getLocalIP();
 
@@ -54,15 +56,33 @@ public class ATorrent {
 		}
 	}
 
-	private String getLocalIP() throws UnknownHostException {
+	private void getServerSocket() {
+		// Automatically chosing a port
+//		serverSocket = new ServerSocket(0);
+//		return;
+		
+		// Try port 50,000 and if this port is not available increment port number and try again
+		boolean done = true;
+		int port = 50000;
+		while (done) {
+			try {
+				serverSocket = new ServerSocket(port);
+				done = false;
+			} catch (IOException e) {
+				System.out.println("port:" + port);
+				port++;
+			}
+		}
+	}
+
+	private String getLocalIP() throws UnknownHostException, SocketException {
 		String localIP = "";
 		try (DatagramSocket socket = new DatagramSocket()) {
 			socket.connect(InetAddress.getByName("8.8.8.8"), 0);
 			localIP = socket.getLocalAddress().getHostAddress();
 			localIP = InetAddress.getLocalHost().getHostAddress();
-		} catch (SocketException e) {
-			localIP = InetAddress.getLocalHost().getHostAddress();
-			LOGGER.fatal("Get private IP address failed.", e);
+			LOGGER.info("IP: " + localIP);
+			LOGGER.info("Port: " + serverSocket.getLocalPort());
 		}
 		return localIP;
 	}
@@ -75,14 +95,20 @@ public class ATorrent {
 	 * @param location
 	 * @throws IOException
 	 */
-	public void createTorrent(String filename, String location) {
+	public boolean createTorrent(String filename, String location) {
+		if (closed) {
+			LOGGER.fatal("ATorrent class already closed.");
+			return false;
+		}
 		try {
 			TorrentProcessor processor = new TorrentProcessor();
 			Job job = processor.createMetadataFile(fileManager, filename, location, "Martin");
 			fileManager.contactTracker();
 			LOGGER.info("CREATE TORRENT METADATA Pieces: " + job.numPieces() + " " + job.getTorrentInfoHash());
+			return true;
 		} catch (IOException e) {
 			LOGGER.fatal("Creating torrent failed.", e);
+			return false;
 		}
 	}
 
@@ -96,6 +122,10 @@ public class ATorrent {
 	 * @throws ClassNotFoundException
 	 */
 	public Optional<Future<Boolean>> loadTorrent(String torrentFileName, String storeLocation) {
+		if (closed) {
+			LOGGER.fatal("ATorrent class already closed.");
+			return Optional.empty();
+		}
 		try {
 			TorrentProcessor processor = new TorrentProcessor();
 			TorrentMetadata torrentMetadata;
@@ -123,6 +153,21 @@ public class ATorrent {
 			listener.close();
 		}
 		if (downloadExecutorService != null) {
+			closeDownloadExecutor();
+		}
+		closed = true;
+	}
+
+	private void closeDownloadExecutor() {
+		try {
+			downloadExecutorService.shutdown();
+			downloadExecutorService.awaitTermination(5, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			LOGGER.error("Download Executor Termination interrupted!", e);
+		} finally {
+			if (!downloadExecutorService.isTerminated()) {
+				LOGGER.error("Download Executor Cancel non-finished tasks!");
+			}
 			downloadExecutorService.shutdownNow();
 		}
 	}

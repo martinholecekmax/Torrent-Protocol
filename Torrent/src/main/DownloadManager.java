@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -44,15 +45,14 @@ public class DownloadManager implements Callable<Boolean> {
 
 	public Boolean call() {
 		Thread.currentThread().setName("Download Manager");
-		
+
 		while (!job.isDone()) {
 			try {
 				Optional<TrackerResponse> response = TrackerClientSSL.getResponse(job.getTorrentMetadata(), client,
 						job.getStatus());
 				if (response.isPresent()) {
 					peers = response.get().getPeers();
-//					interval = response.get().getInterval();
-					interval = 2000;
+					// interval = response.get().getInterval();
 					if (setPeerPublicIP(peers)) {
 						createDownloadTasks(peers);
 					}
@@ -62,15 +62,27 @@ public class DownloadManager implements Callable<Boolean> {
 				LOGGER.warn("Thread sleep has been interrupted.", e);
 			}
 		}
-		
+
 		// Measure time of download
 		long endTime = System.currentTimeMillis();
 		String testId = UUID.randomUUID().toString();
 		CSVFileHandler.writeTime((endTime - startTime), testId);
-		
+
 		fileManager.contactTracker();
-		executorService.shutdown();
-		LOGGER.info("Job Finished " + job.getTorrentMetadata().getInfo().getName());
+
+		try {
+			executorService.shutdown();
+			executorService.awaitTermination(30, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			LOGGER.error("Download Task Executor Termination interrupted!", e);
+		} finally {
+			if (!executorService.isTerminated()) {
+				LOGGER.error("Download Task Executor Cancel non-finished tasks!");
+			}
+			executorService.shutdownNow();
+		}
+
+		LOGGER.info("Job Finished " + job.getTorrentMetadata().getInfo().getName() + " Time: " + (endTime - startTime));
 		return true;
 	}
 
@@ -106,8 +118,8 @@ public class DownloadManager implements Callable<Boolean> {
 					if (!started) {
 						startTime = System.currentTimeMillis();
 						started = true;
-					}					
-					
+					}
+
 					DownloadTask task = new DownloadTask(socket, fileManager, connectedPeers, peer, job);
 					executorService.submit(task);
 				}

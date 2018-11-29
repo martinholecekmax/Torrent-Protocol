@@ -1,11 +1,12 @@
 package main;
 
+import static utils.Constants.DISCONNECT_WAIT;
 import static utils.Constants.PIECE_SIZE;
+import static utils.Constants.TIMER_TO_SET_PIECE_QUEUE;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
@@ -23,6 +24,8 @@ public class DownloadTask implements Runnable {
 	private Reader reader;
 	private ConnectionState state;
 	private Job job;
+	private PiecesQueue piecesQueue;
+	private long timeStart;
 
 	public DownloadTask(Socket socket, FileManager fileManager, ArrayList<Peer> connectedPeers, Peer peer, Job job) {
 		state = new ConnectionState(socket);
@@ -32,6 +35,7 @@ public class DownloadTask implements Runnable {
 		this.reader = new Reader(state, "Client Reader");
 		this.writer = new Writer(state, "Client Writer");
 		this.job = job;
+		this.piecesQueue = new PiecesQueue();
 	}
 
 	@Override
@@ -44,13 +48,16 @@ public class DownloadTask implements Runnable {
 		readerThread.start();
 		writerThread.start();
 
+		timeStart = System.currentTimeMillis() - TIMER_TO_SET_PIECE_QUEUE;
+		setPieceQueue();
+
 		while (state.isAlive()) {
 			try {
 				processRead();
 				processWrite();
 				Thread.sleep(job.getBandwidth());
 			} catch (InterruptedException e) {
-				LOGGER.error("Thread sleep has been interrupted.", e);
+				LOGGER.error("Download Task Thread sleep has been interrupted.");
 				state.setKill(true);
 			}
 		}
@@ -76,7 +83,7 @@ public class DownloadTask implements Runnable {
 	 */
 	public void processRead() throws InterruptedException {
 		if (state.hasRead()) {
-			String message = state.dequeueRead();			
+			String message = state.dequeueRead();
 			if (message.startsWith("HAVEPIECE")) {
 				String[] messageSplit = message.split(" ");
 				String infoHash = messageSplit[1].trim();
@@ -119,16 +126,35 @@ public class DownloadTask implements Runnable {
 			state.clearWriteQueue();
 			state.clearReadQueue();
 			state.enqueueWrite("DISCONNECT");
+			Thread.sleep(DISCONNECT_WAIT);
 			state.setKill(true);
-		} else if (state.isAlive()){
-			if (!job.isDone()) {
-				Optional<Piece> piece = job.findLessSeenPiece();
-				if (piece.isPresent()) {
-					String infoHash = job.getTorrentInfoHash();
-					state.enqueueWrite("PIECEEXISTS " + infoHash + " " + piece.get().getIndex());
-					LOGGER.trace("Piece: " + piece.get().getIndex() + " SENDING!");
+		} else if (state.isAlive()) {
+			Piece piece = piecesQueue.dequeuePiece();
+			if (piece != null) {
+				String infoHash = job.getTorrentInfoHash();
+				state.enqueueWrite("PIECEEXISTS " + infoHash + " " + piece.getIndex());
+				LOGGER.trace("Piece: " + piece.getIndex() + " SENDING!");
+			} else {
+				setPieceQueue();
+			}
+		}
+	}
+
+	private void setPieceQueue() {
+		long timeEnd = System.currentTimeMillis();
+		long timeDelta = timeEnd - timeStart;
+		if (timeDelta > TIMER_TO_SET_PIECE_QUEUE) {
+			LOGGER.trace("Enqueue PIECES");
+			for (Piece piece : job.getPieces()) {
+				if (!piece.isStored()) {
+					piecesQueue.enqueuePiece(piece);
 				}
 			}
+			if (!piecesQueue.hasPiece()) {
+				LOGGER.trace("ENQUEUE NO MORE PIECES");
+				job.setDone(true);
+			}
+			timeStart = System.currentTimeMillis();
 		}
 	}
 }

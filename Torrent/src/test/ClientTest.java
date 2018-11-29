@@ -18,17 +18,17 @@ class ClientTest {
 
 	public static void main(String[] args) {
 		ClientTest clientTest = new ClientTest();
-		clientTest.test();
+		clientTest.test(1);
 	}
 	
-	void test() {
-//		torrentFileName = PROJECT_ROOT_DIRECTORY + "/empty_1MB.temp";
+	void test(int numberTests) {
+		// torrentFileName = PROJECT_ROOT_DIRECTORY + "/empty_1MB.temp";
 		torrentFileName = PROJECT_ROOT_DIRECTORY + "/empty_20MB.temp";
-//		torrentFileName = PROJECT_ROOT_DIRECTORY + "/empty_100MB.temp";
+		// torrentFileName = PROJECT_ROOT_DIRECTORY + "/empty_100MB.temp";
 		storeLocation = TORRENT_ROOT_LOCATION + "test\\";		
 				
 		LOGGER.info("Test Started ...");
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < numberTests; i++) {
 			runClient();
 			LOGGER.info("Test done: " + i);
 		}
@@ -50,6 +50,6 @@ class ClientTest {
 		}
 		aTorrent.close();
 		System.gc();
-		LOGGER.error("Client Finished.");
+		LOGGER.info("Client Finished.");
 	}
 }

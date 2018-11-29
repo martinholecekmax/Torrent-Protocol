@@ -18,9 +18,9 @@ class ServerTest {
 	}
 	
 	void test() {		
-//		filename = PROJECT_ROOT_DIRECTORY + "/empty_1MB.txt";
+		// filename = PROJECT_ROOT_DIRECTORY + "/empty_1MB.txt";
 		filename = PROJECT_ROOT_DIRECTORY + "/empty_20MB.txt";
-//		filename = PROJECT_ROOT_DIRECTORY + "/empty_100MB.txt";
+		// filename = PROJECT_ROOT_DIRECTORY + "/empty_100MB.txt";
 		location = PROJECT_ROOT_DIRECTORY + "\\";
 		
 		LOGGER.info("Server Started");

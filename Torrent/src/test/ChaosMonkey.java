@@ -18,6 +18,9 @@ public class ChaosMonkey {
 	 * @return
 	 */
 	public static boolean randomlyChangePiece(byte[] data, int changePercentage) {
+		if (changePercentage == 0) {
+			return false;
+		}
 		Random random = new Random();	
 		float decimal = (float) changePercentage / 100;
 		if (Math.random() < decimal) {
@@ -29,6 +32,10 @@ public class ChaosMonkey {
 		return false;
 	}	
 	
+	/**
+	 * Just for testing of the functionality of this class
+	 * @param args
+	 */
 	public static void main(String[] args) {		
 		int counter = 0;
 		for (int i = 0; i < 100; i++) {

@@ -249,7 +249,7 @@ public class Job implements Serializable {
 	 * 
 	 * @return number of pieces that are completed.
 	 */
-	private int calculatePiecesDone() {
+	public int calculatePiecesDone() {
 		int done = 0;
 		for (Piece piece : pieces) {
 			if (piece.isStored()) {

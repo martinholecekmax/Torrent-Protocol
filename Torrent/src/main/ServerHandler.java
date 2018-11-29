@@ -78,6 +78,7 @@ public class ServerHandler implements Runnable {
 	public void processCommands() throws InterruptedException {
 		if (state.hasRead()) {
 			String message = state.dequeueRead();
+			LOGGER.trace(message);
 			if (message.startsWith("PIECEEXISTS")) {
 				// PIECEEXISTS FILE_ID_HASH PIECE_INDEX
 				String[] messageSplit = message.split(" ");
@@ -92,7 +93,7 @@ public class ServerHandler implements Runnable {
 					if (data.isPresent()) {
 						
 						// Introduce corrupted data
-						ChaosMonkey.randomlyChangePiece(data.get(), 50);
+						ChaosMonkey.randomlyChangePiece(data.get(), 0);
 						
 						String dataEncoded = new String(Base64.encodeBase64(data.get()));						
 						state.enqueueWrite("HAVEPIECE " + infoHash + " " + index + " " + dataEncoded);						
@@ -107,7 +108,6 @@ public class ServerHandler implements Runnable {
 			} else if (message.startsWith("DISCONNECT")) {
 				LOGGER.info("Server disconnects ...");
 				state.setKill(true);
-				Thread.sleep(100);
 				state.clearReadQueue();
 				state.clearWriteQueue();
 			} else {

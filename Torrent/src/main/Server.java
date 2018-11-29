@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -37,8 +38,6 @@ public class Server implements Runnable {
 			jobUpdaterService.submit(jobUpdater);			
 						
 			LOGGER.info("Server Created ...");
-			LOGGER.info("IP: " + serverSocket.getInetAddress().toString());
-			LOGGER.info("Port: " + serverSocket.getLocalPort());
 			
 			executorService = Executors.newFixedThreadPool(MAX_SERVER_THREADS);
 
@@ -50,18 +49,23 @@ public class Server implements Runnable {
 				executorService.submit(connection);
 			}
 		} catch (IOException e) {
-			LOGGER.error("Server Socket failed. Accept method interrupted." + e.getMessage());
+			if (running) {
+				LOGGER.error("Server Socket failed. Accept method interrupted." + e.getMessage());
+			} else {
+				LOGGER.info("Server Closed Gracefully.");
+			}			
 		}
 	}
 	
 	public void close() {
 		running = false;
-		if (!jobUpdaterService.isShutdown()) {			
-			jobUpdaterService.shutdownNow();
-		}
-		if (!executorService.isShutdown()) {
-			executorService.shutdownNow();			
-		}
+		jobUpdater.close();		
+		jobUpdaterService.shutdownNow();
+		closeServerExecutor();				
+		closeServerSocket();		
+	}
+
+	private void closeServerSocket() {
 		if (serverSocket != null) {
 			try {
 				if (!serverSocket.isClosed()) {
@@ -70,6 +74,20 @@ public class Server implements Runnable {
 			} catch (IOException e) {
 				LOGGER.error("Something wrong with closing server socket.", e);
 			}				
-		}		
+		}
+	}
+
+	private void closeServerExecutor() {
+		try {
+			executorService.shutdown();
+			executorService.awaitTermination(5, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			LOGGER.error("Server Executor Termination interrupted!", e);
+		} finally {
+			if (!executorService.isTerminated()) {
+				LOGGER.error("Server Executor Cancel non-finished tasks!");
+			}
+			executorService.shutdownNow();
+		}
 	}
 }

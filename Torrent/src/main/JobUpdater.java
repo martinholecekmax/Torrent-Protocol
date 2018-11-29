@@ -25,7 +25,11 @@ public class JobUpdater implements Runnable {
 			try {
 				Thread.sleep(CONTACT_TRACKER_TIMER);
 			} catch (InterruptedException e) {
-				LOGGER.error("Job Updater Thread sleep has been interrupted.");
+				if (running) {
+					LOGGER.error("Job Updater Thread sleep has been interrupted.");
+				} else {
+					LOGGER.info("Job Updater Thread has been closed.");
+				}				
 				break;
 			}
 		}
@@ -38,6 +42,6 @@ public class JobUpdater implements Runnable {
 	}
 	
 	public void close() {
-		Thread.currentThread().interrupt();
+		running = false;
 	}
 }
